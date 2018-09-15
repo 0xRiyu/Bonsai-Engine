@@ -8,6 +8,7 @@
 #include "../graphics/Scene.h"
 
 namespace bonsai {
+	using namespace graphics;
 	class SystemClass
 	{
 	public:

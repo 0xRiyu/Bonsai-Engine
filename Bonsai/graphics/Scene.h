@@ -1,23 +1,29 @@
 ﻿#pragma once
-#include <Windows.h>
-namespace bonzai {
-	const bool FULL_SCREEN(false);
-	const bool VSYNC_ENABLED(true);
-	const float SCREEN_DEPTH(1000.0f);
-	const float SCREEN_NEAR(0.1f);
+#include "D3D.h"
 
-	class Scene
-	{
-	public:
-		Scene();
-		Scene(const Scene& scene);
-		~Scene();
+namespace bonsai {
+	namespace graphics {
+		const bool FULL_SCREEN(false);
+		const bool VSYNC_ENABLED(true);
+		const float SCREEN_DEPTH(1000.0f);
+		const float SCREEN_NEAR(0.1f);
 
-		bool Initialize(int screenWidth, int screenHeight, HWND hwnd);
-		void Shutdown();
-		bool Frame();
+		class Scene
+		{
+		public:
+			Scene();
+			Scene(const Scene& scene);
+			~Scene();
 
-	private:
-		bool Render();
-	};
+			bool Initialize(int screenWidth, int screenHeight, HWND hwnd);
+			void Shutdown();
+			bool Frame();
+
+		private:
+			bool Render();
+
+		private:
+			Direct3D * m_Direct3D;
+		};
+	}
 }

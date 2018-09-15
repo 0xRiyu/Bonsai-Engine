@@ -1,30 +1,54 @@
 ﻿#include "Scene.h"
-namespace bonzai {
-	Scene::Scene()
-	{
-	}
+namespace bonsai {
+	namespace graphics {
+		Scene::Scene()
+		{
+			m_Direct3D = nullptr;
+		}
 
-	Scene::Scene(const Scene& scene)
-	{
-	}
+		Scene::Scene(const Scene& scene)
+		{
+		}
 
-	Scene::~Scene()
-	{
-	}
+		Scene::~Scene()
+		{
+		}
 
-	bool Scene::Initialize(int screenWidth, int screenHeight, HWND hwnd)
-	{
-	}
+		bool Scene::Initialize(int screenWidth, int screenHeight, HWND hwnd)
+		{
+			m_Direct3D = new Direct3D();
+			if (!m_Direct3D) return false;
+			bool result(m_Direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR));
 
-	void Scene::Shutdown()
-	{
-	}
+			if (!result)
+			{
+				MessageBox(hwnd, L"Could not initalize Direct3D", L"Error", MB_OK);
+				return false;
+			}
 
-	bool Scene::Frame()
-	{
-	}
+			return true;
+		}
 
-	bool Scene::Render()
-	{
+		void Scene::Shutdown()
+		{
+			if (m_Direct3D)
+			{
+				m_Direct3D->Shutdown();
+				delete m_Direct3D;
+				m_Direct3D = nullptr;
+			}
+		}
+
+		bool Scene::Frame()
+		{
+			return Render();
+		}
+
+		bool Scene::Render()
+		{
+			m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+			m_Direct3D->EndScene();
+			return true;
+		}
 	}
 }

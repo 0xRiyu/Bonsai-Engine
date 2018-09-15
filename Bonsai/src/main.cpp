@@ -1,20 +1,18 @@
 #include "Systemclass.h"
-namespace bonsai
-{
+
 	int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 	{
-		SystemClass* system = new SystemClass();
-		bool result;
+		bonsai::SystemClass* system = new bonsai::SystemClass();
 
 		if(!system)
 		{
 			return 0;
 		}
 
-		result = system->Initialize();
+		bool result(system->Initialize());
 		if(result)
 		{
-			system.Run();
+			system->Run();
 		}
 
 		system->Shutdown();
@@ -23,4 +21,3 @@ namespace bonsai
 
 		return 0;
 	}
-}

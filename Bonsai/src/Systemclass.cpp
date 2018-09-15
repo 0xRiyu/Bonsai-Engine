@@ -1,10 +1,11 @@
 #include "Systemclass.h"
+#include <iostream>
 
 namespace bonsai {
 	SystemClass::SystemClass()
 	{
-		m_Input = 0;
-		m_Scene = 0;
+		m_Input = nullptr;
+		m_Scene = nullptr;
 	}
 
 	SystemClass::SystemClass(const SystemClass& other)
@@ -19,31 +20,25 @@ namespace bonsai {
 	{
 		int screenWidth(0);
 		int screenHeight(0);
-		bool result;
 
 		InitializeWindows(screenWidth, screenHeight);
 
-		m_Input = new InputClass;
-		if(m_Input)
+		m_Input = new InputHandler();
+		if(!m_Input)
 		{
 			return false;
 		}
 
 		m_Input->Initialize();
 
-		m_Scene = new Scene;
-		if(m_Scene)
+		m_Scene = new Scene();
+		if(!m_Scene)
 		{
 			return false;
 		}
 
-		result = m_Scene->Initialize(screenWidth, screenHeight, m_Hwnd);
-		if (!result)
-		{
-			return false;
-		}
-
-		return true;
+		bool result = m_Scene->Initialize(screenWidth, screenHeight, m_Hwnd);
+		return result;
 	}
 
 	void SystemClass::Shutdown()
@@ -62,14 +57,12 @@ namespace bonsai {
 		}
 		ShutdownWindows();
 
-		return;
 	}
 
 	void SystemClass::Run()
 	{
 		MSG msg;
-		bool done(false);
-		bool result;
+		bool done = (false);
 
 		ZeroMemory(&msg, sizeof(MSG));
 
@@ -86,14 +79,13 @@ namespace bonsai {
 				done = true;
 			} else
 			{
-				result = Frame();
+				bool result = Frame();
 				if(!result)
 				{
 					done = true;
 				}
 			}
 		}
-		return;
 	}
 
 	bool SystemClass::Frame()
@@ -105,12 +97,8 @@ namespace bonsai {
 			return false;
 		}
 
-		return m_Scene->Frame();
-		if(!result)
-		{
-			return false;
-		}
-		return true;
+		result = m_Scene->Frame();
+		return result;
 	}
 
 	LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
@@ -189,7 +177,6 @@ namespace bonsai {
 
 		ShowCursor(false);
 
-		return;
 	}
 	void SystemClass::ShutdownWindows()
 	{
@@ -207,7 +194,6 @@ namespace bonsai {
 
 		ApplicationHandle = nullptr;
 
-		return;
 	}
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
@@ -216,6 +202,7 @@ namespace bonsai {
 		{
 		case WM_DESTROY:
 			PostQuitMessage(0);
+
 			return 0;
 		case WM_CLOSE:
 			PostQuitMessage(0);
