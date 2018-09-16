@@ -143,20 +143,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="graphics\Camera.cpp" />
     <ClCompile Include="graphics\D3D.cpp" />
+    <ClCompile Include="graphics\Model.cpp" />
     <ClCompile Include="graphics\Scene.cpp" />
+    <ClCompile Include="graphics\Shader.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Systemclass.cpp" />
+    <ClCompile Include="src\System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bonsai.h" />
+    <ClInclude Include="graphics\Camera.h" />
     <ClInclude Include="graphics\D3D.h" />
+    <ClInclude Include="graphics\Model.h" />
     <ClInclude Include="graphics\Scene.h" />
+    <ClInclude Include="graphics\Shader.h" />
     <ClInclude Include="src\InputHandler.h" />
-    <ClInclude Include="src\Systemclass.h" />
+    <ClInclude Include="src\System.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="graphics\shaders\color.frag" />
+    <None Include="graphics\shaders\color.vert" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

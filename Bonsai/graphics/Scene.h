@@ -1,5 +1,8 @@
 ﻿#pragma once
 #include "D3D.h"
+#include "Camera.h"
+#include "Model.h"
+#include "Shader.h"
 
 namespace bonsai {
 	namespace graphics {
@@ -24,6 +27,9 @@ namespace bonsai {
 
 		private:
 			Direct3D * m_Direct3D;
+			Camera* m_Camera;
+			Model* m_Model;
+			Shader* m_ColorShader;
 		};
 	}
 }

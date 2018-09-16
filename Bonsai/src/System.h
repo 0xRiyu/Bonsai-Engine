@@ -9,12 +9,12 @@
 
 namespace bonsai {
 	using namespace graphics;
-	class SystemClass
+	class System
 	{
 	public:
-		SystemClass();
-		SystemClass(const SystemClass&);
-		~SystemClass();
+		System();
+		System(const System&);
+		~System();
 
 		bool Initialize();
 		void Shutdown();
@@ -39,5 +39,5 @@ namespace bonsai {
 
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-	static SystemClass* ApplicationHandle = 0;
+	static System* ApplicationHandle = 0;
 }

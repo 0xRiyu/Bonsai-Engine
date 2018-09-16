@@ -18,9 +18,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Systemclass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\InputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,11 +27,20 @@
     <ClCompile Include="graphics\D3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Systemclass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\InputHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -47,8 +53,22 @@
     <ClInclude Include="bonsai.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="graphics\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="graphics\shaders\color.frag" />
+    <None Include="graphics\shaders\color.vert" />
   </ItemGroup>
 </Project>

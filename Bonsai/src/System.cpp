@@ -1,22 +1,22 @@
-#include "Systemclass.h"
+#include "System.h"
 #include <iostream>
 
 namespace bonsai {
-	SystemClass::SystemClass()
+	System::System()
 	{
 		m_Input = nullptr;
 		m_Scene = nullptr;
 	}
 
-	SystemClass::SystemClass(const SystemClass& other)
+	System::System(const System& other)
 	{
 	}
 
-	SystemClass::~SystemClass()
+	System::~System()
 	{
 	}
 
-	bool SystemClass::Initialize()
+	bool System::Initialize()
 	{
 		int screenWidth(0);
 		int screenHeight(0);
@@ -41,7 +41,7 @@ namespace bonsai {
 		return result;
 	}
 
-	void SystemClass::Shutdown()
+	void System::Shutdown()
 	{
 		if(m_Scene)
 		{
@@ -59,7 +59,7 @@ namespace bonsai {
 
 	}
 
-	void SystemClass::Run()
+	void System::Run()
 	{
 		MSG msg;
 		bool done = (false);
@@ -88,7 +88,7 @@ namespace bonsai {
 		}
 	}
 
-	bool SystemClass::Frame()
+	bool System::Frame()
 	{
 		bool result;
 
@@ -101,7 +101,7 @@ namespace bonsai {
 		return result;
 	}
 
-	LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+	LRESULT System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
 		switch(umsg)
 		{
@@ -116,7 +116,7 @@ namespace bonsai {
 		}
 	}
 
-	void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
+	void System::InitializeWindows(int& screenWidth, int& screenHeight)
 	{
 		WNDCLASSEX wc;
 		DEVMODE dmScreenSettings;
@@ -178,7 +178,7 @@ namespace bonsai {
 		ShowCursor(false);
 
 	}
-	void SystemClass::ShutdownWindows()
+	void System::ShutdownWindows()
 	{
 		ShowCursor(true);
 		if (FULL_SCREEN)

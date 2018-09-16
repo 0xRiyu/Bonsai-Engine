@@ -7,6 +7,9 @@
 #include <iostream>
 #include <vector>
 #include <DirectXMath.h>
+#include <fstream>
+
 
 
 typedef std::string String;
+
