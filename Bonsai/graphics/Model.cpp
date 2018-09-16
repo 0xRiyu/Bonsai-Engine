@@ -80,7 +80,6 @@
 
 			 //Create index buffer
 			 result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_IndexBuffer);
-
 			 if (FAILED(result)) return false;
 
 			 delete[] vertices;

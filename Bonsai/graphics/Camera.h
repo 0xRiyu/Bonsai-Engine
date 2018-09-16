@@ -15,7 +15,7 @@ namespace bonsai {
 			inline void SetPosition(XMFLOAT3 in) { m_PositionX = in.x; m_PositionY = in.y, m_PositionZ = in.z; }
 			inline void SetRotation(XMFLOAT3 in) { m_RotationYaw = in.x; m_RotationPitch = in.y; m_RotationRoll = in.z; }
 
-			inline void SetPosition(float x, float y, float z) { m_PositionX = x; m_PositionY = y, m_PositionZ; }
+			inline void SetPosition(float x, float y, float z) { m_PositionX = x; m_PositionY = y, m_PositionZ = z; }
 			inline void SetRotation(float yaw, float pitch, float roll) { m_RotationYaw = yaw; m_RotationPitch = pitch; m_RotationRoll = roll; }
 
 			inline XMFLOAT3 GetPosition() const { return XMFLOAT3(m_PositionX, m_PositionY, m_PositionZ); }

@@ -4,7 +4,7 @@ namespace bonsai
 	namespace graphics
 	{
 		Camera::Camera()
-			:m_PositionX(0), m_PositionY(0), m_PositionZ(0), m_RotationYaw(0), m_RotationPitch(0), m_RotationRoll(0)
+			:m_PositionX(0.0f), m_PositionY(0.0f), m_PositionZ(0.0f), m_RotationYaw(0.0f), m_RotationPitch(0.0f), m_RotationRoll(0.0f)
 		{
 		}
 

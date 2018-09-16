@@ -100,7 +100,7 @@ namespace bonsai {
 
 			ID3D11DeviceContext* deviceContext = m_Direct3D->GetDeviceContext();
 
-			m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+			m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
 
 			m_Camera->Update();
 

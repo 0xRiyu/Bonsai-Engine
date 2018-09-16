@@ -17,7 +17,7 @@ namespace bonsai
 				XMMATRIX view;
 				XMMATRIX projection;
 			};
-
+			
 		public:
 			Shader();
 			Shader(const Shader& other);
