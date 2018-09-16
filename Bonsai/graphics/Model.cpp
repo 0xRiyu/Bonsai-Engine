@@ -4,9 +4,9 @@
 	 namespace graphics
 	 {
 		 Model::Model()
+			 :m_VertexBuffer(nullptr), m_IndexBuffer(nullptr), m_Texture(nullptr)
 		 {
-			 m_IndexBuffer = nullptr;
-			 m_VertexBuffer = nullptr;
+
 		 }
 
 		 Model::Model(const Model& other)
@@ -17,7 +17,7 @@
 		 {
 		 }
 
-		 bool Model::Initialize(ID3D11Device* device)
+		 bool Model::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilePath)
 		 {
 			 VertexType* vertices;
 			 ULONG* indices;
@@ -36,13 +36,13 @@
 
 			 //TRIANGLE
 			 vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-			 vertices[0].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+			 vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
 
 			 vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top middle.
-			 vertices[1].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+			 vertices[1].texture = XMFLOAT2(0.5f, 0.0f);
 
 			 vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
-			 vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+			 vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
 
 			 indices[0] = 0;
 			 indices[1] = 1;
@@ -88,11 +88,15 @@
 			 delete[] indices;
 			 indices = nullptr;
 
+			 result = LoadTexture(device, deviceContext, textureFilePath);
+			 if (!result) return false;
+
 			 return true;
 		 }
 
 		 void Model::Shutdown()
 		 {
+			 ReleaseTexture();
 			 if (m_IndexBuffer)
 			 {
 				 m_IndexBuffer->Release();
@@ -119,6 +123,25 @@
 			 //set the type of primitive that should be rendered from the buffer - in this case triangles
 			 deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		 }
+
+		 bool Model::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filePath)
+		 {
+
+			 m_Texture = new Texture();
+			 if (!m_Texture) return false;
+
+			 return m_Texture->Initialize(device, deviceContext, filePath);
+		 }
+
+		 void Model::ReleaseTexture()
+		 {
+			 if(m_Texture)
+			 {
+				 m_Texture->Shutdown();
+				 delete m_Texture;
+				 m_Texture = nullptr;
+			 }
 		 }
 	 }
  }

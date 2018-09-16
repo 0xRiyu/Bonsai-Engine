@@ -39,6 +39,9 @@
     <ClCompile Include="src\System.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\InputHandler.h">
@@ -65,10 +68,18 @@
     <ClInclude Include="src\System.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="graphics\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="graphics\shaders\color.frag" />
     <None Include="graphics\shaders\color.vert" />
+    <None Include="graphics\shaders\texture.vert" />
+    <None Include="graphics\shaders\texture.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\textures\wall_512_2_05.tga" />
   </ItemGroup>
 </Project>

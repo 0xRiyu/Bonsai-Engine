@@ -4,11 +4,8 @@ namespace bonsai
 	namespace graphics
 	{
 		Shader::Shader()
+			:m_VertexShader(nullptr), m_FragmentShader(nullptr), m_Layout(nullptr), m_MatrixBuffer(nullptr),m_SampleState(nullptr)
 		{
-			m_VertexShader = nullptr;
-			m_FragmentShader = nullptr;
-			m_Layout = nullptr;
-			m_MatrixBuffer = nullptr;
 		}
 
 		Shader::Shader(const Shader& other)
@@ -21,7 +18,7 @@ namespace bonsai
 
 		bool Shader::Initialize(ID3D11Device* device, HWND hwnd)
 		{
-			return InitializeShader(device, hwnd, L"graphics/shaders/color.vert", L"graphics/shaders/color.frag");			
+			return InitializeShader(device, hwnd, L"graphics/shaders/texture.vert", L"graphics/shaders/texture.frag");			
 		}
 
 		void Shader::Shutdown()
@@ -30,9 +27,9 @@ namespace bonsai
 		}
 
 		bool Shader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-			XMMATRIX projMatrix)
+			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture)
 		{
-			bool result(SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projMatrix));
+			bool result(SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projMatrix, texture));
 			if (!result) return false;
 
 			RenderShader(deviceContext, indexCount);
@@ -48,8 +45,9 @@ namespace bonsai
 			D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
 			UINT numElements;
 			D3D11_BUFFER_DESC matrixBufferDesc;
+			D3D11_SAMPLER_DESC samplerDesc;
 
-			result = D3DCompileFromFile(vert, NULL, NULL, "ColorVertexShader", "vs_5_0",
+			result = D3DCompileFromFile(vert, NULL, NULL, "TextureVertexShader", "vs_5_0",
 				D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
 			if (FAILED(result)) {
 				if(errorMessage)
@@ -61,7 +59,7 @@ namespace bonsai
 				}
 				return false;
 			}
-			result = D3DCompileFromFile(frag, NULL, NULL, "ColorPixelShader", "ps_5_0",
+			result = D3DCompileFromFile(frag, NULL, NULL, "TexturePixelShader", "ps_5_0",
 				D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, &errorMessage);
 			if (FAILED(result))
 			{
@@ -91,9 +89,9 @@ namespace bonsai
 			polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			polygonLayout[0].InstanceDataStepRate = 0;
 
-			polygonLayout[1].SemanticName = "COLOR";
+			polygonLayout[1].SemanticName = "TEXCOORD";
 			polygonLayout[1].SemanticIndex = 0;
-			polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 			polygonLayout[1].InputSlot = 0;
 			polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 			polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -126,6 +124,26 @@ namespace bonsai
 			result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_MatrixBuffer);
 			if (FAILED(result)) return false;
 
+			//Create a texture sampler state description
+			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.MipLODBias = 0.0f;
+			samplerDesc.MaxAnisotropy = 1;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+			samplerDesc.BorderColor[0] = 0;
+			samplerDesc.BorderColor[1] = 0;
+			samplerDesc.BorderColor[2] = 0;
+			samplerDesc.BorderColor[3] = 0;
+			samplerDesc.MinLOD = 0;
+			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+			result = device->CreateSamplerState(&samplerDesc, &m_SampleState);
+			if (FAILED(result)) return false;
+
+
+
 			return true;
 		}
 
@@ -150,6 +168,11 @@ namespace bonsai
 			{
 				m_MatrixBuffer->Release();
 				m_MatrixBuffer = nullptr;
+			}
+			if(m_SampleState)
+			{
+				m_SampleState->Release();
+				m_SampleState = nullptr;
 			}
 		}
 
@@ -179,7 +202,7 @@ namespace bonsai
 		}
 
 		bool Shader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-			XMMATRIX projMatrix)
+			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture)
 		{
 			HRESULT result;
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -211,6 +234,9 @@ namespace bonsai
 			//finally set the constant buffer in the vertex shader
 			deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_MatrixBuffer);
 
+			//set ps shader texture
+			deviceContext->PSSetShaderResources(0, 1, &texture);
+
 			return true;
 		}
 
@@ -222,6 +248,9 @@ namespace bonsai
 			//Set the vertex and pixel shaders that will be used to render this triangle
 			deviceContext->VSSetShader(m_VertexShader, NULL, 0);
 			deviceContext->PSSetShader(m_FragmentShader, NULL, 0);
+
+			//Set the sample state in the PS
+			deviceContext->PSSetSamplers(0, 1, &m_SampleState);
 
 			//render triangle
 			deviceContext->DrawIndexed(indexCount, 0, 0);

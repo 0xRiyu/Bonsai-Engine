@@ -148,6 +148,7 @@
     <ClCompile Include="graphics\Model.cpp" />
     <ClCompile Include="graphics\Scene.cpp" />
     <ClCompile Include="graphics\Shader.cpp" />
+    <ClCompile Include="graphics\Texture.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\System.cpp" />
@@ -159,13 +160,19 @@
     <ClInclude Include="graphics\Model.h" />
     <ClInclude Include="graphics\Scene.h" />
     <ClInclude Include="graphics\Shader.h" />
+    <ClInclude Include="graphics\Texture.h" />
     <ClInclude Include="src\InputHandler.h" />
     <ClInclude Include="src\System.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="graphics\shaders\color.frag" />
     <None Include="graphics\shaders\color.vert" />
+    <None Include="graphics\shaders\texture.frag" />
+    <None Include="graphics\shaders\texture.vert" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\textures\wall_512_2_05.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

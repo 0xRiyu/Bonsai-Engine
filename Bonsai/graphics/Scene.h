@@ -29,7 +29,7 @@ namespace bonsai {
 			Direct3D * m_Direct3D;
 			Camera* m_Camera;
 			Model* m_Model;
-			Shader* m_ColorShader;
+			Shader* m_TextureShader;
 		};
 	}
 }

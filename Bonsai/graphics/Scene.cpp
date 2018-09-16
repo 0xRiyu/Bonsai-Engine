@@ -2,7 +2,7 @@
 namespace bonsai {
 	namespace graphics {
 		Scene::Scene()
-			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_ColorShader(nullptr)
+			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_TextureShader(nullptr)
 		{
 		}
 
@@ -39,19 +39,20 @@ namespace bonsai {
 
 			m_Model = new Model();
 			if (!m_Model) return false;
-			result = m_Model->Initialize(m_Direct3D->GetDevice());
+		
+			result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "resources/textures/bonsai_small.tga");
 			if (!result)
 			{
 				MessageBox(hwnd, L"Could not initalize the model object.", L"Error", MB_OK);
 				return false;
 			}
 
-			m_ColorShader = new Shader();
-			if (!m_ColorShader) return false;
-			result = m_ColorShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+			m_TextureShader = new Shader();
+			if (!m_TextureShader) return false;
+			result = m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
 			if (!result)
 			{
-				MessageBox(hwnd, L"Could not initalize the Colorshader.", L"Error", MB_OK);
+				MessageBox(hwnd, L"Could not initalize the Texture shader.", L"Error", MB_OK);
 				return false;
 			}
 
@@ -67,11 +68,11 @@ namespace bonsai {
 				m_Direct3D = nullptr;
 			}
 
-			if (m_ColorShader)
+			if (m_TextureShader)
 			{
-				m_ColorShader->Shutdown();
-				delete m_ColorShader;
-				m_ColorShader = nullptr;
+				m_TextureShader->Shutdown();
+				delete m_TextureShader;
+				m_TextureShader = nullptr;
 			}
 
 			if (m_Camera)
@@ -111,7 +112,7 @@ namespace bonsai {
 
 			m_Model->Render(deviceContext);
 
-			result = m_ColorShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
 			if (!result) return false;
 			//OutputDebugString(L"test\n");
 			m_Direct3D->EndScene();
