@@ -25,8 +25,8 @@
 			 D3D11_SUBRESOURCE_DATA vertexData, indexData;
 			 HRESULT result;
 
-			 m_VertexCount = 3;
-			 m_IndexCount = 3;
+			 m_VertexCount = 4;
+			 m_IndexCount = 6;
 
 			 vertices = new VertexType[m_VertexCount];
 			 if (!vertices) return false;
@@ -36,17 +36,23 @@
 
 			 //TRIANGLE
 			 vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-			 vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
+			 vertices[0].texture = XMFLOAT2(1.0f, 0.0f);
 
-			 vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top middle.
-			 vertices[1].texture = XMFLOAT2(0.5f, 0.0f);
+			 vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);  // Top left.
+			 vertices[1].texture = XMFLOAT2(1.0f, 1.0f);
 
-			 vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
-			 vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
+			 vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f);  // top right.
+			 vertices[2].texture = XMFLOAT2(0.0f, 1.0f);
+
+			 vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f); //bottom right
+			 vertices[3].texture = XMFLOAT2(0.0f, 0.0f);
 
 			 indices[0] = 0;
 			 indices[1] = 1;
 			 indices[2] = 2;
+			 indices[3] = 0;
+			 indices[4] = 2;
+			 indices[5] = 3;
 
 			 //Setup Desc of static vertex buffer
 			 vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
