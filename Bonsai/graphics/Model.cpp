@@ -37,15 +37,20 @@
 			 //TRIANGLE
 			 vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
 			 vertices[0].texture = XMFLOAT2(1.0f, 0.0f);
+			 vertices[0].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 			 vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);  // Top left.
 			 vertices[1].texture = XMFLOAT2(1.0f, 1.0f);
+			 vertices[1].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 			 vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f);  // top right.
 			 vertices[2].texture = XMFLOAT2(0.0f, 1.0f);
+			 vertices[2].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 			 vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f); //bottom right
 			 vertices[3].texture = XMFLOAT2(0.0f, 0.0f);
+			 vertices[3].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+
 
 			 indices[0] = 0;
 			 indices[1] = 1;

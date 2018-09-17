@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="graphics\Camera.cpp" />
     <ClCompile Include="graphics\D3D.cpp" />
+    <ClCompile Include="graphics\Light.cpp" />
     <ClCompile Include="graphics\Model.cpp" />
     <ClCompile Include="graphics\Scene.cpp" />
     <ClCompile Include="graphics\Shader.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="bonsai.h" />
     <ClInclude Include="graphics\Camera.h" />
     <ClInclude Include="graphics\D3D.h" />
+    <ClInclude Include="graphics\Light.h" />
     <ClInclude Include="graphics\Model.h" />
     <ClInclude Include="graphics\Scene.h" />
     <ClInclude Include="graphics\Shader.h" />
@@ -170,9 +172,6 @@
     <None Include="graphics\shaders\texture.frag" />
     <None Include="graphics\shaders\texture.vert" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="resources\textures\wall_512_2_05.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -56,6 +56,11 @@ namespace bonsai {
 				return false;
 			}
 
+			m_Light = new Light();
+			if (!m_Light) return false;
+			m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+			m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+
 			return true;
 		}
 
@@ -87,14 +92,34 @@ namespace bonsai {
 				delete m_Model;
 				m_Model = nullptr;
 			}
+
+			if (m_Light)
+			{
+				delete m_Light;
+				m_Light = nullptr;
+			}
 		}
 
 		bool Scene::Frame()
 		{
-			return Render();
+			static float rotation = 0.0f;
+			static bool flip(false);
+
+			if (flip) {
+				rotation += (float)XM_PI * 0.005f ;
+			} else
+			{
+				rotation -= (float)XM_PI * 0.005f ;
+			}
+
+			if (rotation > 85 ) flip = false;
+			if (rotation < -85) flip = true;
+			
+
+			return Render(rotation);
 		}
 
-		bool Scene::Render()
+		bool Scene::Render(float rotation)
 		{
 			XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 			bool result;
@@ -110,9 +135,12 @@ namespace bonsai {
 			m_Camera->GetViewMatrix(viewMatrix);
 			m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
+			worldMatrix = worldMatrix * XMMatrixRotationY(rotation  * 0.0174533);
+
 			m_Model->Render(deviceContext);
 
-			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
+			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+				m_Model->GetTexture(),m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
 			//OutputDebugString(L"test\n");
 			m_Direct3D->EndScene();

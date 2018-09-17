@@ -4,7 +4,7 @@ namespace bonsai
 	namespace graphics
 	{
 		Shader::Shader()
-			:m_VertexShader(nullptr), m_FragmentShader(nullptr), m_Layout(nullptr), m_MatrixBuffer(nullptr),m_SampleState(nullptr)
+			:m_VertexShader(nullptr), m_FragmentShader(nullptr), m_Layout(nullptr), m_MatrixBuffer(nullptr),m_SampleState(nullptr),m_LightBuffer(nullptr)
 		{
 		}
 
@@ -27,9 +27,9 @@ namespace bonsai
 		}
 
 		bool Shader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture)
+			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture, XMFLOAT4 diffusecolor, XMFLOAT3 lightdirection)
 		{
-			bool result(SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projMatrix, texture));
+			bool result(SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projMatrix, texture, diffusecolor, lightdirection));
 			if (!result) return false;
 
 			RenderShader(deviceContext, indexCount);
@@ -42,10 +42,11 @@ namespace bonsai
 			ID3D10Blob* errorMessage(nullptr);
 			ID3D10Blob* vertexShaderBuffer(nullptr);
 			ID3D10Blob* pixelShaderBuffer(nullptr);
-			D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+			D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 			UINT numElements;
 			D3D11_BUFFER_DESC matrixBufferDesc;
 			D3D11_SAMPLER_DESC samplerDesc;
+			D3D11_BUFFER_DESC lightBufferDesc;
 
 			result = D3DCompileFromFile(vert, NULL, NULL, "TextureVertexShader", "vs_5_0",
 				D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
@@ -97,6 +98,14 @@ namespace bonsai
 			polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			polygonLayout[1].InstanceDataStepRate = 0;
 
+			polygonLayout[2].SemanticName = "NORMAL";
+			polygonLayout[2].SemanticIndex = 0;
+			polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			polygonLayout[2].InputSlot = 0;
+			polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[2].InstanceDataStepRate = 0;
+
 			//get the count of the elements
 			numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
@@ -142,7 +151,18 @@ namespace bonsai
 			result = device->CreateSamplerState(&samplerDesc, &m_SampleState);
 			if (FAILED(result)) return false;
 
+			//setup the desc of the light dynamic constant buffer that is in the pixel shader
+			//note that bytewidth always needs to be a multiple of 16 if using d3d11_bind_constant_buffer or CreateBuffer will fail
+			lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+			lightBufferDesc.ByteWidth = sizeof(LightBufferType);
+			lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			lightBufferDesc.MiscFlags = 0;
+			lightBufferDesc.StructureByteStride = 0;
 
+			//create the constant buffer pointer so we can access the vertex shader constant vuffer from within this class
+			result = device->CreateBuffer(&lightBufferDesc, NULL, &m_LightBuffer);
+			if (FAILED(result)) return false;
 
 			return true;
 		}
@@ -174,6 +194,11 @@ namespace bonsai
 				m_SampleState->Release();
 				m_SampleState = nullptr;
 			}
+			if (m_LightBuffer)
+			{	
+				m_LightBuffer->Release();
+				m_LightBuffer = nullptr;
+			}
 		}
 
 		void Shader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
@@ -202,11 +227,12 @@ namespace bonsai
 		}
 
 		bool Shader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture)
+			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture, XMFLOAT4 diffusecolor, XMFLOAT3 lightdirection)
 		{
 			HRESULT result;
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			MatrixBufferType* dataPtr;
+			LightBufferType* dataPtr2;
 			UINT bufferNumber;
 
 			worldMatrix = XMMatrixTranspose(worldMatrix);
@@ -236,6 +262,29 @@ namespace bonsai
 
 			//set ps shader texture
 			deviceContext->PSSetShaderResources(0, 1, &texture);
+
+
+			//Lock the light constant buffer so it can be written to
+			result = deviceContext->Map(m_LightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			if (FAILED(result)) return false;
+
+			//Get a pointer to the data in the constant buffer
+			dataPtr2 = (LightBufferType*)mappedResource.pData;
+
+			//copy the lighting variables into the constant buffer
+			dataPtr2->diffuseColor = diffusecolor;
+			dataPtr2->lightDirection = lightdirection;
+			dataPtr2->padding = 0.0f;
+
+			//Unlock
+			deviceContext->Unmap(m_LightBuffer, 0);
+
+			//Set the position of the light const buffer in the pixel shader
+			bufferNumber = 0;
+
+			//Finally Set the light constant buffer in the pixel shader with the updated vals
+			deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_LightBuffer);
+
 
 			return true;
 		}

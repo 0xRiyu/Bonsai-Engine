@@ -3,6 +3,8 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Shader.h"
+#include "Light.h"
+#include <SimpleMath.h>
 
 namespace bonsai {
 	namespace graphics {
@@ -23,13 +25,14 @@ namespace bonsai {
 			bool Frame();
 
 		private:
-			bool Render();
+			bool Render(float rotation);
 
 		private:
 			Direct3D * m_Direct3D;
 			Camera* m_Camera;
 			Model* m_Model;
 			Shader* m_TextureShader;
+			Light* m_Light;
 		};
 	}
 }
