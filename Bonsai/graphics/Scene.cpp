@@ -35,12 +35,13 @@ namespace bonsai {
 
 			m_Camera = new Camera();
 			if (!m_Camera) return false;
-			m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
+			m_Camera->SetPosition(0.0f, 2.0f, -5.0f);
+			m_Camera->SetRotation(0.0, 10.0f, 0.0f);
 
 			m_Model = new Model();
 			if (!m_Model) return false;
 		
-			result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "resources/textures/bonsai_small.tga");
+			result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "resources/textures/bonsai_small.tga", "resources/obj/cube.txt");
 			if (!result)
 			{
 				MessageBox(hwnd, L"Could not initalize the model object.", L"Error", MB_OK);
@@ -59,7 +60,7 @@ namespace bonsai {
 			m_Light = new Light();
 			if (!m_Light) return false;
 			m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-			m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+			m_Light->SetDirection(0.0f, -1.0f, 1.0f);
 
 			return true;
 		}
@@ -106,14 +107,14 @@ namespace bonsai {
 			static bool flip(false);
 
 			if (flip) {
-				rotation += (float)XM_PI * 0.005f ;
+				rotation += (float)XM_PI * 0.01f ;
 			} else
 			{
-				rotation -= (float)XM_PI * 0.005f ;
+				rotation -= (float)XM_PI * 0.01f ;
 			}
 
-			if (rotation > 85 ) flip = false;
-			if (rotation < -85) flip = true;
+			if (rotation > 360 ) flip = false;
+			if (rotation < -360) flip = true;
 			
 
 			return Render(rotation);
@@ -126,7 +127,7 @@ namespace bonsai {
 
 			ID3D11DeviceContext* deviceContext = m_Direct3D->GetDeviceContext();
 
-			m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+			m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 			m_Camera->Update();
 

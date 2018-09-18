@@ -2,6 +2,7 @@
 #include "../bonsai.h"
 #include "Texture.h"
 using namespace DirectX;
+using namespace std;
 namespace bonsai {
 	namespace graphics {
 		class Model
@@ -14,12 +15,19 @@ namespace bonsai {
 				XMFLOAT3 normal;
 			};
 
+			struct ModelType
+			{
+				float x, y, z;
+				float tu, tv;
+				float nx, ny, nz;
+			};
+
 		public:
 			Model();
 			Model(const Model& other);
 			~Model();
 
-			bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilePath);
+			bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilePath, const char* modelFilePath );
 			void Shutdown();
 			void Render(ID3D11DeviceContext* deviceContext);
 
@@ -28,6 +36,10 @@ namespace bonsai {
 
 
 		private:
+
+			bool LoadModel(const char* modelFileName);
+			void ReleaseModel();
+
 			bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext,const char* filePath);
 			void ReleaseTexture();
 		private:
@@ -35,6 +47,7 @@ namespace bonsai {
 			ID3D11Buffer* m_IndexBuffer;
 			int m_VertexCount, m_IndexCount;
 			Texture* m_Texture;
+			ModelType* m_Model;
 		};
 	}
 }

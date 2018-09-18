@@ -4,7 +4,7 @@
 	 namespace graphics
 	 {
 		 Model::Model()
-			 :m_VertexBuffer(nullptr), m_IndexBuffer(nullptr), m_Texture(nullptr)
+			 :m_VertexBuffer(nullptr), m_IndexBuffer(nullptr), m_Texture(nullptr),m_Model(nullptr)
 		 {
 
 		 }
@@ -17,16 +17,19 @@
 		 {
 		 }
 
-		 bool Model::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilePath)
+		 bool Model::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilePath, const char* modelFilePath)
 		 {
+			 HRESULT result;
+			 result = LoadModel(modelFilePath);
+			 if (!result) return false;
+
+
 			 VertexType* vertices;
 			 ULONG* indices;
 			 D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 			 D3D11_SUBRESOURCE_DATA vertexData, indexData;
-			 HRESULT result;
+			 int i;
 
-			 m_VertexCount = 4;
-			 m_IndexCount = 6;
 
 			 vertices = new VertexType[m_VertexCount];
 			 if (!vertices) return false;
@@ -34,30 +37,14 @@
 			 indices = new ULONG[m_IndexCount];
 			 if (!indices) return false;
 
-			 //TRIANGLE
-			 vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-			 vertices[0].texture = XMFLOAT2(1.0f, 0.0f);
-			 vertices[0].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+			 for(i=0; i<m_VertexCount; i++)
+			 {
+				 vertices[i].position = XMFLOAT3(m_Model[i].x, m_Model[i].y, m_Model[i].z);
+				 vertices[i].texture = XMFLOAT2(m_Model[i].tu, m_Model[i].tv);
+				 vertices[i].normal = XMFLOAT3(m_Model[i].nx, m_Model[i].ny, m_Model[i].nz);
 
-			 vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);  // Top left.
-			 vertices[1].texture = XMFLOAT2(1.0f, 1.0f);
-			 vertices[1].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
-
-			 vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f);  // top right.
-			 vertices[2].texture = XMFLOAT2(0.0f, 1.0f);
-			 vertices[2].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
-
-			 vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f); //bottom right
-			 vertices[3].texture = XMFLOAT2(0.0f, 0.0f);
-			 vertices[3].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
-
-
-			 indices[0] = 0;
-			 indices[1] = 1;
-			 indices[2] = 2;
-			 indices[3] = 0;
-			 indices[4] = 2;
-			 indices[5] = 3;
+				 indices[i] = i;
+			 }
 
 			 //Setup Desc of static vertex buffer
 			 vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -102,6 +89,8 @@
 			 result = LoadTexture(device, deviceContext, textureFilePath);
 			 if (!result) return false;
 
+			 
+
 			 return true;
 		 }
 
@@ -118,6 +107,8 @@
 				 m_VertexBuffer->Release();
 				 m_VertexBuffer = nullptr;
 			 }
+
+			 ReleaseModel();
 		 }
 
 		 void Model::Render(ID3D11DeviceContext* deviceContext)
@@ -134,6 +125,59 @@
 			 //set the type of primitive that should be rendered from the buffer - in this case triangles
 			 deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		 }
+
+		 bool Model::LoadModel(const char* modelFilePath)
+		 {
+			 ifstream fin;
+			 char input;
+			 int i;
+
+			 fin.open(modelFilePath);
+
+			 if (fin.fail()) return false;
+
+			 fin.get(input);
+			 while(input != ':')
+			 {
+				 fin.get(input);
+			 }
+
+			 fin >> m_VertexCount;
+
+			 m_IndexCount = m_VertexCount;
+
+			 m_Model = new ModelType[m_VertexCount];
+			 if (!m_Model) return false;
+
+			 fin.get(input);
+			 while (input != ':')
+			 {
+				 fin.get(input);
+			 }
+			 fin.get(input);
+			 fin.get(input);
+
+			 //read in the vertex data
+			 for(i = 0; i< m_VertexCount; i++)
+			 {
+				 fin >> m_Model[i].x >> m_Model[i].y >> m_Model[i].z;
+				 fin >> m_Model[i].tu >> m_Model[i].tv;
+				 fin >> m_Model[i].nx >> m_Model[i].ny >> m_Model[i].nz;
+			 }
+
+			 fin.close();
+
+			 return true;
+		 }
+
+		 void Model::ReleaseModel()
+		 {
+			 if (m_Model)
+			 {
+				 delete m_Model;
+				 m_Model = nullptr;
+			 }
 		 }
 
 		 bool Model::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filePath)
