@@ -34,6 +34,9 @@ namespace bonsai {
 
 		InputHandler* m_Input;
 		Scene* m_Scene;
+
+		SYSTEMTIME m_LastTime;
+		float m_NumberOfFrames;
 	};
 
 
