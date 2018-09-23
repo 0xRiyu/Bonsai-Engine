@@ -22,6 +22,7 @@ namespace bonsai
 
 			struct LightBufferType
 			{
+				XMFLOAT4 ambientColor;
 				XMFLOAT4 diffuseColor;
 				XMFLOAT3 lightDirection;
 				float padding;
@@ -35,7 +36,7 @@ namespace bonsai
 			bool Initialize(ID3D11Device* device, HWND hwnd);
 			void Shutdown();
 			bool Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projMatrix,
-				ID3D11ShaderResourceView* texture,XMFLOAT4 diffusecolor, XMFLOAT3 lightdirection);
+				ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 lightDirection);
 
 		private:
 			bool InitializeShader(ID3D11Device* device, HWND hwnd, const WCHAR* vert, const WCHAR* frag);
@@ -43,7 +44,7 @@ namespace bonsai
 			void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename);
 
 			bool SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projMatrix,
-				ID3D11ShaderResourceView* texture, XMFLOAT4 diffusecolor, XMFLOAT3 lightdirection);
+				ID3D11ShaderResourceView* texture,XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 lightDirection);
 
 			void RenderShader(ID3D11DeviceContext* deviceContext, int indexCount);
 

@@ -64,6 +64,7 @@ namespace bonsai {
 
 			m_Light = new Light();
 			if (!m_Light) return false;
+			m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 			m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 			m_Light->SetDirection(0.0f, -1.0f, 1.0f);
 
@@ -149,7 +150,7 @@ namespace bonsai {
 			
 
 			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-				m_Model->GetTexture(),m_Light->GetDiffuseColor(), m_Light->GetDirection());
+				m_Model->GetTexture(),m_Light->GetAmbientColor() ,m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
 
 			

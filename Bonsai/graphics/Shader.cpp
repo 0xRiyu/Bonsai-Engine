@@ -27,9 +27,9 @@ namespace bonsai
 		}
 
 		bool Shader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture, XMFLOAT4 diffusecolor, XMFLOAT3 lightdirection)
+			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture,XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 lightDirection)
 		{
-			bool result(SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projMatrix, texture, diffusecolor, lightdirection));
+			bool result(SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projMatrix, texture, ambientColor, diffuseColor, lightDirection));
 			if (!result) return false;
 
 			RenderShader(deviceContext, indexCount);
@@ -227,7 +227,7 @@ namespace bonsai
 		}
 
 		bool Shader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture, XMFLOAT4 diffusecolor, XMFLOAT3 lightdirection)
+			XMMATRIX projMatrix, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 lightDirection)
 		{
 			HRESULT result;
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -272,8 +272,9 @@ namespace bonsai
 			dataPtr2 = (LightBufferType*)mappedResource.pData;
 
 			//copy the lighting variables into the constant buffer
-			dataPtr2->diffuseColor = diffusecolor;
-			dataPtr2->lightDirection = lightdirection;
+			dataPtr2->ambientColor = ambientColor;
+			dataPtr2->diffuseColor = diffuseColor;
+			dataPtr2->lightDirection = lightDirection;
 			dataPtr2->padding = 0.0f;
 
 			//Unlock
