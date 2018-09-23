@@ -24,6 +24,8 @@ namespace bonsai {
 			void Shutdown();
 			bool Frame();
 
+			Camera* GetCamera() const { return m_Camera; }
+
 		private:
 			bool Render(float rotation);
 

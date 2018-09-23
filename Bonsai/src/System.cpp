@@ -23,7 +23,7 @@ namespace bonsai {
 
 		InitializeWindows(screenWidth, screenHeight);
 
-		m_Input = new InputHandler();
+		m_Input = new InputHandler(m_Hwnd);
 		if(!m_Input)
 		{
 			return false;
@@ -91,11 +91,14 @@ namespace bonsai {
 	bool System::Frame()
 	{
 		bool result;
-
+		
+		
 		if (m_Input->IsKeyDown(VK_ESCAPE))
 		{
 			return false;
 		}
+
+		
 
 		result = m_Scene->Frame();
 		return result;
@@ -110,6 +113,19 @@ namespace bonsai {
 			return 0;
 		case WM_KEYUP:
 			m_Input->KeyUp((unsigned int)wparam);
+			return 0;
+		case WM_ACTIVATE:
+			if (wparam == WA_ACTIVE) {
+				RECT rect;
+				GetWindowRect(m_Hwnd, &rect);
+				ClipCursor(&rect);
+			}
+			return 0;
+
+		case WM_INPUT:
+			m_Input->ParseInputs(m_Scene->GetCamera(), lparam);
+			
+			
 			return 0;
 		default:
 			return DefWindowProc(hwnd, umsg, wparam, lparam);
@@ -174,7 +190,10 @@ namespace bonsai {
 		ShowWindow(m_Hwnd, SW_SHOW);
 		SetForegroundWindow(m_Hwnd);
 		SetFocus(m_Hwnd);
-
+		RECT rect;
+		GetWindowRect(m_Hwnd, &rect);
+		ClipCursor(&rect);
+		
 		ShowCursor(false);
 
 	}

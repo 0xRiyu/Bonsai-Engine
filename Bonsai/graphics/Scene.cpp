@@ -35,8 +35,9 @@ namespace bonsai {
 
 			m_Camera = new Camera();
 			if (!m_Camera) return false;
-			m_Camera->SetPosition(0.0f, 2.0f, -5.0f);
-			m_Camera->SetRotation(0.0, 10.0f, 0.0f);
+			m_Camera->SetPosition(0.0f, 0.0f, -15.0f);
+			m_Camera->SetRotation(25.0, 0.0f, 0.0f);
+			m_Camera->Update();
 
 			m_Model = new Model();
 			if (!m_Model) return false;
@@ -48,6 +49,8 @@ namespace bonsai {
 				return false;
 			}
 
+	
+
 			m_TextureShader = new Shader();
 			if (!m_TextureShader) return false;
 			result = m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
@@ -56,6 +59,8 @@ namespace bonsai {
 				MessageBox(hwnd, L"Could not initalize the Texture shader.", L"Error", MB_OK);
 				return false;
 			}
+
+			
 
 			m_Light = new Light();
 			if (!m_Light) return false;
@@ -107,10 +112,10 @@ namespace bonsai {
 			static bool flip(false);
 
 			if (flip) {
-				rotation += (float)XM_PI * 0.01f ;
+				rotation += (float)XM_PI * 0.005f ;
 			} else
 			{
-				rotation -= (float)XM_PI * 0.01f ;
+				rotation -= (float)XM_PI * 0.005f ;
 			}
 
 			if (rotation > 360 ) flip = false;
@@ -138,11 +143,16 @@ namespace bonsai {
 
 			worldMatrix = worldMatrix * XMMatrixRotationY(rotation  * 0.0174533);
 
+
 			m_Model->Render(deviceContext);
+			
+			
 
 			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 				m_Model->GetTexture(),m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
+
+			
 			//OutputDebugString(L"test\n");
 			m_Direct3D->EndScene();
 			return true;

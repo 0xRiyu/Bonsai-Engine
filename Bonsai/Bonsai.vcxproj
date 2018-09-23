@@ -153,6 +153,7 @@
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\System.cpp" />
+    <ClCompile Include="util\RawInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bonsai.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="graphics\Texture.h" />
     <ClInclude Include="src\InputHandler.h" />
     <ClInclude Include="src\System.h" />
+    <ClInclude Include="util\RawInput.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="graphics\shaders\color.frag" />

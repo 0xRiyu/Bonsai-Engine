@@ -143,7 +143,7 @@
 			 index = 0;
 
 			 //init the index into the targa image data
-			 k = (width*height * 4) - (width * 4);
+			 k = 0;
 
 			 //now copy the targa image data into the dest aray in the correcy order since the targa format is stored upside down
 			 for(j = 0; j < height; j++)
@@ -159,7 +159,7 @@
 				 }
 
 				 //Set the targa image data index back to the preceding row at the beginning of the collumn since its reading it in upside down
-				 k -= (width * 8);
+				 //k += (width * 4);
 			 }
 
 			 //release the targa image data now that it was copied into the array

@@ -21,7 +21,11 @@ namespace bonsai {
 			inline XMFLOAT3 GetPosition() const { return XMFLOAT3(m_PositionX, m_PositionY, m_PositionZ); }
 			inline XMFLOAT3 GetRotation() const { return XMFLOAT3(m_RotationYaw, m_RotationPitch, m_RotationRoll); }
 
-			inline void GetViewMatrix(XMMATRIX& mat) { mat = m_ViewMatrix; }
+			inline XMVECTOR GetLookAtVector() const { return m_LookAt; }
+			inline XMVECTOR GetUpVector() const { return m_Up; }
+			inline XMVECTOR GetPositionVector() const { return m_Position; }
+
+			inline void GetViewMatrix(XMMATRIX& mat) const { mat = m_ViewMatrix; }
 			inline XMMATRIX GetViewMatrix() const { return m_ViewMatrix; }
 			void Update();
 			
@@ -29,6 +33,8 @@ namespace bonsai {
 			float m_PositionX, m_PositionY, m_PositionZ;
 			float m_RotationYaw, m_RotationPitch, m_RotationRoll;
 			XMMATRIX m_ViewMatrix;
+			XMVECTOR m_Position, m_LookAt, m_Up;
+
 		};
 	}
 }

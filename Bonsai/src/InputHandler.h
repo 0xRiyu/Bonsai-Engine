@@ -1,19 +1,37 @@
 ﻿#pragma once
 
-class InputHandler
-{
-public:
-	InputHandler();
-	InputHandler(const InputHandler&);
-	~InputHandler();
+#pragma comment(lib, "dinput8.lib")
+#pragma comment(lib, "dxguid.lib")
+#include "../graphics/Camera.h"
+#include <ctime>
+#include <dinput.h>
+#include "../util/RawInput.h"
+namespace bonsai {
 
-	void Initialize();
+	class InputHandler
+	{
+	public:
+		InputHandler(HWND hwndm);
+		InputHandler(const InputHandler&);
+		~InputHandler();
 
-	void KeyDown(unsigned int);
-	void KeyUp(unsigned int);
+		void Initialize();
 
-	bool IsKeyDown(unsigned int);
+		void KeyDown(unsigned int);
+		void KeyUp(unsigned int);
 
-private:
-	bool m_Keys[256];
-};
+		bool IsKeyDown(unsigned int);
+
+		void ParseInputs(bonsai::graphics::Camera* camera, LPARAM lparam);
+
+	private:
+		bool m_Keys[256];
+
+
+		const float m_MouseSensitivity = 0.05f;
+	public:
+
+		RawInput* m_RawInput;
+
+	};
+}
