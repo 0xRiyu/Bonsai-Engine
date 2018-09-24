@@ -24,16 +24,20 @@ namespace bonsai {
 			inline XMVECTOR GetLookAtVector() const { return m_LookAt; }
 			inline XMVECTOR GetUpVector() const { return m_Up; }
 			inline XMVECTOR GetPositionVector() const { return m_Position; }
+			inline XMVECTOR GetRotationVectorRads() const { return m_RotationVector; }
 
 			inline void GetViewMatrix(XMMATRIX& mat) const { mat = m_ViewMatrix; }
+
 			inline XMMATRIX GetViewMatrix() const { return m_ViewMatrix; }
+
 			void Update();
 			
 		private:
 			float m_PositionX, m_PositionY, m_PositionZ;
 			float m_RotationYaw, m_RotationPitch, m_RotationRoll;
 			XMMATRIX m_ViewMatrix;
-			XMVECTOR m_Position, m_LookAt, m_Up;
+
+			XMVECTOR m_Position, m_LookAt, m_Up, m_RotationVector;
 
 		};
 	}

@@ -10,6 +10,7 @@ namespace bonsai
 			m_RenderTargetView = nullptr;
 			m_DepthStencilBuffer = nullptr;
 			m_DepthStencilState = nullptr;
+			m_DepthDisabledStencilState = nullptr;
 			m_DepthStencilView = nullptr;
 			m_RasterState = nullptr;
 		}
@@ -39,6 +40,7 @@ namespace bonsai
 			ID3D11Texture2D* backBufferPtr;
 			D3D11_TEXTURE2D_DESC depthBufferDesc;
 			D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+			D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 			D3D11_RASTERIZER_DESC rasterDesc;
 			D3D11_VIEWPORT viewport;
@@ -225,6 +227,33 @@ namespace bonsai
 			//Set the depth stencil state
 			m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState, 1);
 
+			//FOR 2D
+			ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
+			
+			depthDisabledStencilDesc.DepthEnable = false;
+			depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+			depthDisabledStencilDesc.StencilEnable = true;
+			depthDisabledStencilDesc.StencilReadMask = 0xFF;
+			depthDisabledStencilDesc.StencilWriteMask = 0xFF;
+
+			//if the pixel is front facing
+			depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+			depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+			depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+			//if the pixel is back-facing
+			depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+			depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+			depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+			result = m_Device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_DepthDisabledStencilState);
+			if (FAILED(result)) return false;
+
+
 			//initalize the depth stencil view
 			ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
@@ -308,7 +337,13 @@ namespace bonsai
 			{	  
 				m_DepthStencilState->Release();
 				m_DepthStencilState = nullptr;
-			}	  
+			}
+
+			if (m_DepthDisabledStencilState)
+			{
+				m_DepthDisabledStencilState->Release();
+				m_DepthDisabledStencilState = nullptr;
+			}
 				  
 			if (m_DepthStencilBuffer)
 			{	  

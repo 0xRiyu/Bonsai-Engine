@@ -57,6 +57,8 @@ namespace bonsai
 			yaw = m_RotationYaw * 0.0174532925f;
 			roll = m_RotationRoll * 0.0174532925f;
 
+			m_RotationVector = XMLoadFloat3(&XMFLOAT3(pitch, yaw, roll));
+
 			// Create the rotation matrix from the yaw, pitch, and roll values.
 			rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
 
@@ -71,8 +73,10 @@ namespace bonsai
 			m_LookAt = lookAtVector;
 			m_Up = upVector;
 
+
 			// Finally create the view matrix from the three updated vectors.
 			m_ViewMatrix = XMMatrixLookAtLH(positionVector, positionVector + lookAtVector, upVector);
+
 
 		}
 	}

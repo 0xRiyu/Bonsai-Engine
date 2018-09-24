@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Shader.h"
 #include "Light.h"
+#include "Img2D.h"
 #include <SimpleMath.h>
 
 namespace bonsai {
@@ -27,7 +28,7 @@ namespace bonsai {
 			Camera* GetCamera() const { return m_Camera; }
 
 		private:
-			bool Render(float rotation);
+			bool Render();
 
 		private:
 			Direct3D * m_Direct3D;
@@ -35,6 +36,7 @@ namespace bonsai {
 			Model* m_Model;
 			Shader* m_TextureShader;
 			Light* m_Light;
+			Img2D* m_Image2D;
 		};
 	}
 }

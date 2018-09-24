@@ -32,6 +32,9 @@ namespace bonsai {
 			inline XMMATRIX GetWorldMatrix() const { return m_WorldMatrix; }
 			inline XMMATRIX GetOrthoMatrix() const { return m_OrthoMatrix; }
 
+			inline void TurnZBufferOn() const { m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState, 1); }
+			inline void TurnZBufferOff() const { m_DeviceContext->OMSetDepthStencilState(m_DepthDisabledStencilState, 1); }
+
 			void GetVideoCardInfo(char*, int&);
 		private:
 			bool m_vsync_enabled;
@@ -43,6 +46,7 @@ namespace bonsai {
 			ID3D11RenderTargetView* m_RenderTargetView;
 			ID3D11Texture2D* m_DepthStencilBuffer;
 			ID3D11DepthStencilState* m_DepthStencilState;
+			ID3D11DepthStencilState* m_DepthDisabledStencilState;
 			ID3D11DepthStencilView* m_DepthStencilView;
 			ID3D11RasterizerState* m_RasterState;
 			XMMATRIX m_ProjectionMatrix;

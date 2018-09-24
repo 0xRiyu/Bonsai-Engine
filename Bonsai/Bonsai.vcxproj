@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="graphics\Camera.cpp" />
     <ClCompile Include="graphics\D3D.cpp" />
+    <ClCompile Include="graphics\Img2D.cpp" />
     <ClCompile Include="graphics\Light.cpp" />
     <ClCompile Include="graphics\Model.cpp" />
     <ClCompile Include="graphics\Scene.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="bonsai.h" />
     <ClInclude Include="graphics\Camera.h" />
     <ClInclude Include="graphics\D3D.h" />
+    <ClInclude Include="graphics\Img2D.h" />
     <ClInclude Include="graphics\Light.h" />
     <ClInclude Include="graphics\Model.h" />
     <ClInclude Include="graphics\Scene.h" />

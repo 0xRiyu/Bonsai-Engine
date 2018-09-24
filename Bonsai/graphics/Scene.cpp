@@ -2,7 +2,7 @@
 namespace bonsai {
 	namespace graphics {
 		Scene::Scene()
-			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_TextureShader(nullptr)
+			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_TextureShader(nullptr), m_Light(nullptr),m_Image2D(nullptr)
 		{
 		}
 
@@ -25,6 +25,7 @@ namespace bonsai {
 				MessageBox(hwnd, L"Could not initalize Direct3D", L"Error", MB_OK);
 				return false;
 			}
+
 			char videoCardName[128];
 			int memory;
 			m_Direct3D->GetVideoCardInfo(videoCardName, memory);
@@ -60,13 +61,21 @@ namespace bonsai {
 				return false;
 			}
 
-			
-
 			m_Light = new Light();
 			if (!m_Light) return false;
-			m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+			m_Light->SetAmbientColor(0.35f, 0.35f, 0.35f, 1.0f);
 			m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-			m_Light->SetDirection(0.0f, -1.0f, 1.0f);
+			m_Light->SetDirection(1.0f, -1.0f, 1.0f);
+
+
+			m_Image2D = new Img2D();
+			if (!m_Image2D) return false;
+			result = m_Image2D->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), screenWidth, screenHeight, "resources/textures/bonsai_small.tga", 350,350);
+			if (!result)
+			{
+				MessageBox(hwnd, L"Could not initalize the 2DTexture.", L"Error", MB_OK);
+				return false;
+			}
 
 			return true;
 		}
@@ -105,30 +114,41 @@ namespace bonsai {
 				delete m_Light;
 				m_Light = nullptr;
 			}
+
+			if (m_Image2D)
+			{
+				m_Image2D->ShutDown();
+				delete m_Image2D;
+				m_Image2D = nullptr;
+			}
 		}
 
 		bool Scene::Frame()
+		{
+			
+			return Render();
+		}
+
+		bool Scene::Render()
 		{
 			static float rotation = 0.0f;
 			static bool flip(false);
 
 			if (flip) {
-				rotation += (float)XM_PI * 0.005f ;
-			} else
+				rotation += (float)XM_PI * 0.005f;
+			}
+			else
 			{
-				rotation -= (float)XM_PI * 0.005f ;
+				rotation -= (float)XM_PI * 0.005f;
 			}
 
-			if (rotation > 360 ) flip = false;
+			if (rotation > 360) flip = false;
 			if (rotation < -360) flip = true;
-			
 
-			return Render(rotation);
-		}
 
-		bool Scene::Render(float rotation)
-		{
-			XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+
+
+			XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, worldMatrix2D, viewMatrix2D;
 			bool result;
 
 			ID3D11DeviceContext* deviceContext = m_Direct3D->GetDeviceContext();
@@ -139,20 +159,38 @@ namespace bonsai {
 
 			//callbacks
 			m_Direct3D->GetWorldMatrix(worldMatrix);
+			m_Direct3D->GetWorldMatrix(worldMatrix2D);
 			m_Camera->GetViewMatrix(viewMatrix);
+			m_Camera->GetViewMatrix(viewMatrix2D);
 			m_Direct3D->GetProjectionMatrix(projectionMatrix);
+			m_Direct3D->GetOrthoMatrix(orthoMatrix);
+
 
 			worldMatrix = worldMatrix * XMMatrixRotationY(rotation  * 0.0174533);
+		
+			worldMatrix2D = worldMatrix2D * XMMatrixTranslationFromVector(m_Camera->GetPositionVector());
+			worldMatrix2D = worldMatrix2D * XMMatrixRotationRollPitchYawFromVector(m_Camera->GetRotationVectorRads());
+			
 
-
+			m_Direct3D->TurnZBufferOn();
+			
 			m_Model->Render(deviceContext);
-			
-			
 
 			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 				m_Model->GetTexture(),m_Light->GetAmbientColor() ,m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
 
+			m_Direct3D->TurnZBufferOff()
+			;
+			result = m_Image2D->Render(deviceContext, 0, 0);
+			if (!result) return false;
+
+			result = m_TextureShader->Render(deviceContext, m_Image2D->GetIndexCount(), worldMatrix2D, viewMatrix2D, orthoMatrix,
+				m_Image2D->GetTexture(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection());
+			if (!result) return false;
+
+
+			m_Direct3D->TurnZBufferOn();
 			
 			//OutputDebugString(L"test\n");
 			m_Direct3D->EndScene();
