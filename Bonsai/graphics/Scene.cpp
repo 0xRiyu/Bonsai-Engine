@@ -167,10 +167,14 @@ namespace bonsai {
 
 
 			worldMatrix = worldMatrix * XMMatrixRotationY(rotation  * 0.0174533);
-		
-			worldMatrix2D = worldMatrix2D * XMMatrixTranslationFromVector(m_Camera->GetPositionVector());
+
+			//Translate the orth projection in front of the camera slightly
+			XMVECTOR camloc = m_Camera->GetPositionVector();
+			XMVECTOR lookatVec = m_Camera->GetLookAtVector();
+			camloc +=  XMVector3Normalize(lookatVec);
+
 			worldMatrix2D = worldMatrix2D * XMMatrixRotationRollPitchYawFromVector(m_Camera->GetRotationVectorRads());
-			
+			worldMatrix2D = worldMatrix2D * XMMatrixTranslationFromVector(camloc);
 
 			m_Direct3D->TurnZBufferOn();
 			
@@ -182,7 +186,7 @@ namespace bonsai {
 
 			m_Direct3D->TurnZBufferOff()
 			;
-			result = m_Image2D->Render(deviceContext, 0, 0);
+			result = m_Image2D->Render(deviceContext, 50, 50);
 			if (!result) return false;
 
 			result = m_TextureShader->Render(deviceContext, m_Image2D->GetIndexCount(), worldMatrix2D, viewMatrix2D, orthoMatrix,
