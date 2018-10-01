@@ -35,6 +35,17 @@ namespace bonsai {
 			inline void TurnZBufferOn() const { m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState, 1); }
 			inline void TurnZBufferOff() const { m_DeviceContext->OMSetDepthStencilState(m_DepthDisabledStencilState, 1); }
 
+			inline void TurnOnAlphaBlending() const
+			{
+				float blendFactor[4] = { 0.0f,0.0f,0.0f,0.0f };
+				m_DeviceContext->OMSetBlendState(m_AlphaEnableBlendingState, blendFactor, 0xffffffff);
+			}
+			inline void TurnOffAlphaBlending() const
+			{
+				float blendFactor[4] = { 0.0f,0.0f,0.0f,0.0f };
+				m_DeviceContext->OMSetBlendState(m_AlphaDisableBlendingState, blendFactor, 0xffffffff);
+			}
+
 			void GetVideoCardInfo(char*, int&);
 		private:
 			bool m_vsync_enabled;
@@ -49,6 +60,9 @@ namespace bonsai {
 			ID3D11DepthStencilState* m_DepthDisabledStencilState;
 			ID3D11DepthStencilView* m_DepthStencilView;
 			ID3D11RasterizerState* m_RasterState;
+			ID3D11BlendState* m_AlphaEnableBlendingState;
+			ID3D11BlendState* m_AlphaDisableBlendingState;
+
 			XMMATRIX m_ProjectionMatrix;
 			XMMATRIX m_WorldMatrix;
 			XMMATRIX m_OrthoMatrix;

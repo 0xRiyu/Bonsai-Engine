@@ -9,6 +9,7 @@ cbuffer LightBuffer
     float padding;
 };
 
+
 struct PixelInputType
 {
     float4 position : SV_POSITION;
@@ -38,6 +39,7 @@ float4 TexturePixelShader(PixelInputType input) : SV_TARGET
     color = saturate(color);
 
     color = color * textureColor;
+
 
     return color;
 }

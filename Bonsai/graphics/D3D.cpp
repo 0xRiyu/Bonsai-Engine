@@ -13,6 +13,8 @@ namespace bonsai
 			m_DepthDisabledStencilState = nullptr;
 			m_DepthStencilView = nullptr;
 			m_RasterState = nullptr;
+			m_AlphaDisableBlendingState = nullptr;
+			m_AlphaEnableBlendingState = nullptr;
 		}
 
 		Direct3D::Direct3D(const Direct3D&)
@@ -44,6 +46,8 @@ namespace bonsai
 			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 			D3D11_RASTERIZER_DESC rasterDesc;
 			D3D11_VIEWPORT viewport;
+			D3D11_BLEND_DESC blendStateDesc;
+
 			float fieldOfView, screenAspect;
 
 			m_vsync_enabled = vsync;
@@ -299,9 +303,33 @@ namespace bonsai
 			//Create the viewport
 			m_DeviceContext->RSSetViewports(1, &viewport);
 
+
+			//Init blend state desc
+			ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+
+			//For when we want blending
+			blendStateDesc.RenderTarget[0].BlendEnable = true;
+			blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+			blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC1_ALPHA;
+			blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+			result = m_Device->CreateBlendState(&blendStateDesc, &m_AlphaEnableBlendingState);
+			if (FAILED(result)) return false;
+
+			//For when we dont want blending
+			blendStateDesc.RenderTarget[0].BlendEnable = false;
+
+			result = m_Device->CreateBlendState(&blendStateDesc, &m_AlphaDisableBlendingState);
+			if (FAILED(result)) return false;
+
 			//Setup Projection Matrix
 			fieldOfView = 3.14159f / 4.0f;
 			screenAspect = (float)screenWidth / (float)screenHeight;
+
 
 			//Create the matrix
 			m_ProjectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
@@ -310,6 +338,9 @@ namespace bonsai
 			m_WorldMatrix = XMMatrixIdentity();
 
 			m_OrthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+
+
+
 
 			return true;
 		}
@@ -373,6 +404,18 @@ namespace bonsai
 			{	  
 				m_SwapChain->Release();
 				m_SwapChain = nullptr;
+			}
+
+			if (m_AlphaDisableBlendingState)
+			{
+				m_AlphaDisableBlendingState->Release();
+				m_AlphaDisableBlendingState = nullptr;
+			}
+
+			if (m_AlphaEnableBlendingState)
+			{
+				m_AlphaEnableBlendingState->Release();
+				m_AlphaEnableBlendingState = nullptr;
 			}
 		}
 

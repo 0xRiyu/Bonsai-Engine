@@ -2,7 +2,7 @@
 namespace bonsai {
 	namespace graphics {
 		Scene::Scene()
-			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_TextureShader(nullptr), m_Light(nullptr),m_Image2D(nullptr)
+			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_TextureShader(nullptr), m_Light(nullptr), m_Text(nullptr)
 		{
 		}
 
@@ -16,6 +16,8 @@ namespace bonsai {
 
 		bool Scene::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		{
+			XMMATRIX baseViewMatrix;
+
 			m_Direct3D = new Direct3D();
 			if (!m_Direct3D) return false;
 			bool result(m_Direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR));
@@ -26,6 +28,7 @@ namespace bonsai {
 				return false;
 			}
 
+			//Outputs VideoCard Info
 			char videoCardName[128];
 			int memory;
 			m_Direct3D->GetVideoCardInfo(videoCardName, memory);
@@ -39,6 +42,8 @@ namespace bonsai {
 			m_Camera->SetPosition(0.0f, 0.0f, -15.0f);
 			m_Camera->SetRotation(25.0, 0.0f, 0.0f);
 			m_Camera->Update();
+			m_Camera->GetViewMatrix(baseViewMatrix);
+
 
 			m_Model = new Model();
 			if (!m_Model) return false;
@@ -49,8 +54,6 @@ namespace bonsai {
 				MessageBox(hwnd, L"Could not initalize the model object.", L"Error", MB_OK);
 				return false;
 			}
-
-	
 
 			m_TextureShader = new Shader();
 			if (!m_TextureShader) return false;
@@ -68,14 +71,17 @@ namespace bonsai {
 			m_Light->SetDirection(1.0f, -1.0f, 1.0f);
 
 
-			m_Image2D = new Img2D();
-			if (!m_Image2D) return false;
-			result = m_Image2D->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), screenWidth, screenHeight, "resources/textures/bonsai_small.tga", 350,350);
+			m_Text = new Text();
+			if (!m_Text) return false;
+
+			result = m_Text->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), hwnd, screenWidth, screenHeight, baseViewMatrix);
 			if (!result)
 			{
-				MessageBox(hwnd, L"Could not initalize the 2DTexture.", L"Error", MB_OK);
+				MessageBox(hwnd, L"Could not initalize the Text.", L"Error", MB_OK);
 				return false;
 			}
+
+			m_Text->PushBackText("FPS String","FPS Counter", 10, 10, 1.0f, 1.0f, 1.0f);
 
 			return true;
 		}
@@ -115,11 +121,11 @@ namespace bonsai {
 				m_Light = nullptr;
 			}
 
-			if (m_Image2D)
+			if(m_Text)
 			{
-				m_Image2D->ShutDown();
-				delete m_Image2D;
-				m_Image2D = nullptr;
+				m_Text->Shutdown();
+				delete m_Text;
+				m_Text = nullptr;
 			}
 		}
 
@@ -184,15 +190,12 @@ namespace bonsai {
 				m_Model->GetTexture(),m_Light->GetAmbientColor() ,m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
 
-			m_Direct3D->TurnZBufferOff()
-			;
-			result = m_Image2D->Render(deviceContext, 50, 50);
-			if (!result) return false;
+			m_Direct3D->TurnZBufferOff();
 
-			result = m_TextureShader->Render(deviceContext, m_Image2D->GetIndexCount(), worldMatrix2D, viewMatrix2D, orthoMatrix,
-				m_Image2D->GetTexture(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection());
+			m_Direct3D->TurnOnAlphaBlending();
+			result = m_Text->Render(deviceContext, worldMatrix2D,viewMatrix2D, orthoMatrix);
 			if (!result) return false;
-
+			m_Direct3D->TurnOffAlphaBlending();
 
 			m_Direct3D->TurnZBufferOn();
 			

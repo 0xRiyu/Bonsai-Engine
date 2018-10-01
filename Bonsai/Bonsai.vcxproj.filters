@@ -51,6 +51,15 @@
     <ClCompile Include="graphics\Img2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\Font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\FontShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\InputHandler.h">
@@ -89,6 +98,15 @@
     <ClInclude Include="graphics\Img2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="graphics\Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\FontShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -96,5 +114,7 @@
     <None Include="graphics\shaders\color.vert" />
     <None Include="graphics\shaders\texture.frag" />
     <None Include="graphics\shaders\texture.vert" />
+    <None Include="graphics\shaders\text.frag" />
+    <None Include="graphics\shaders\text.vert" />
   </ItemGroup>
 </Project>

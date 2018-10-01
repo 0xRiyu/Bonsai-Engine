@@ -4,12 +4,13 @@
 #include "Model.h"
 #include "Shader.h"
 #include "Light.h"
-#include "Img2D.h"
+#include "Text.h"
 #include <SimpleMath.h>
 
 namespace bonsai {
 	namespace graphics {
 		const bool FULL_SCREEN(false);
+		//TODO: FIX VSYNC with Raw input
 		const bool VSYNC_ENABLED(false);
 		const float SCREEN_DEPTH(1000.0f);
 		const float SCREEN_NEAR(0.1f);
@@ -36,7 +37,8 @@ namespace bonsai {
 			Model* m_Model;
 			Shader* m_TextureShader;
 			Light* m_Light;
-			Img2D* m_Image2D;
+		public:
+			Text* m_Text;
 		};
 	}
 }

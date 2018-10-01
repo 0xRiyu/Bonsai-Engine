@@ -104,15 +104,12 @@ namespace bonsai {
 		//To include the case where current time seconds resets to 0
 		if (m_CurrentTime.wSecond - m_LastTime.wSecond >= 1.0f || m_CurrentTime.wSecond - m_LastTime.wSecond < -1)
 		{
-			if (m_Input->IsKeyDown(VK_TAB))
-			{
-				char memoryStr[256];
-				float ms = 1000.0 / m_NumberOfFrames;
-				sprintf(memoryStr, "ms/frame: %f\n", ms);
-				OutputDebugStringA(memoryStr);
-				m_NumberOfFrames = 0.0f;
-				GetSystemTime(&m_LastTime);;
-			}
+			char FPScount[48];
+			sprintf_s(FPScount, "FPS: %d", (int)m_NumberOfFrames);
+
+			m_Scene->m_Text->UpdateText("FPS String", FPScount, 10, 10, 1.0, 1.0, 1.0);
+			m_NumberOfFrames = 0.0f;
+			GetSystemTime(&m_LastTime);;
 		}
 
 		
