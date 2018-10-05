@@ -190,6 +190,22 @@ namespace bonsai {
 				m_Model->GetTexture(),m_Light->GetAmbientColor() ,m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
 
+			XMMATRIX worldMatrixInc = XMMatrixIdentity();
+
+			for (int i = -25; i < 25; i+=5)
+			{
+				for (int j = -25; j < 25; j += 5) {
+					for (int k = -25; k < 25; k += 5) {
+						worldMatrixInc = XMMatrixRotationY(rotation  * 0.0174533) * XMMatrixTranslation(i, j, k) ;
+						
+						
+						result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrixInc, viewMatrix, projectionMatrix,
+							m_Model->GetTexture(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection());
+						if (!result) return false;
+					}
+				}
+			}
+
 			m_Direct3D->TurnZBufferOff();
 
 			m_Direct3D->TurnOnAlphaBlending();

@@ -24,7 +24,7 @@ namespace bonsai {
 		InitializeWindows(screenWidth, screenHeight);
 
 		m_Input = new InputHandler(m_Hwnd);
-		if(!m_Input)
+		if (!m_Input)
 		{
 			return false;
 		}
@@ -32,7 +32,7 @@ namespace bonsai {
 		m_Input->Initialize();
 
 		m_Scene = new Scene();
-		if(!m_Scene)
+		if (!m_Scene)
 		{
 			return false;
 		}
@@ -45,14 +45,14 @@ namespace bonsai {
 
 	void System::Shutdown()
 	{
-		if(m_Scene)
+		if (m_Scene)
 		{
 			m_Scene->Shutdown();
 			delete m_Scene;
 			m_Scene = nullptr;
 		}
 
-		if(m_Input)
+		if (m_Input)
 		{
 			delete m_Input;
 			m_Input = nullptr;
@@ -68,24 +68,28 @@ namespace bonsai {
 
 		ZeroMemory(&msg, sizeof(MSG));
 
-		while(!done)
+		while (!done)
 		{
-			if(PeekMessage(&msg,NULL,0,0,PM_REMOVE))
+			while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 			{
+				if (msg.message == WM_QUIT)
+				{
+					done = true;
+				}
+
+				if (msg.message == WM_INPUT)
+				{
+					m_Input->ParseMouseInput(m_Scene->GetCamera(), msg.lParam);
+				}
+
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
 
-			if(msg.message == WM_QUIT)
+			bool result = Frame();
+			if (!result)
 			{
 				done = true;
-			} else
-			{
-				bool result = Frame();
-				if(!result)
-				{
-					done = true;
-				}
 			}
 		}
 	}
@@ -112,14 +116,14 @@ namespace bonsai {
 			GetSystemTime(&m_LastTime);;
 		}
 
-		
+		m_Input->ParseKeyboardInput(m_Scene->GetCamera());
 
 		return m_Scene->Frame();
 	}
 
 	LRESULT System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 	{
-		switch(umsg)
+		switch (umsg)
 		{
 		case WM_KEYDOWN:
 			m_Input->KeyDown((unsigned int)wparam);
@@ -135,11 +139,7 @@ namespace bonsai {
 			}
 			return 0;
 
-		case WM_INPUT:
-			m_Input->ParseInputs(m_Scene->GetCamera(), lparam);
-			
-			
-			return 0;
+
 		default:
 			return DefWindowProc(hwnd, umsg, wparam, lparam);
 		}
@@ -175,7 +175,7 @@ namespace bonsai {
 		screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-		if(FULL_SCREEN)
+		if (FULL_SCREEN)
 		{
 			memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 			dmScreenSettings.dmSize = sizeof(dmScreenSettings);
@@ -187,18 +187,19 @@ namespace bonsai {
 			ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 
 			posX = posY = 0;
-		} else
+		}
+		else
 		{
 			screenWidth = 800;
-			screenHeight = 600;
+			screenHeight = 640;
 
 			posX = GetSystemMetrics((SM_CXSCREEN - screenWidth) / 2);
 			posY = GetSystemMetrics((SM_CYSCREEN - screenHeight) / 2);
 		}
 
 		m_Hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_ApplicationName, m_ApplicationName,
-				WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
-				posX, posY, screenWidth, screenHeight, NULL, NULL, m_Hinstance, NULL);
+			WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
+			posX, posY, screenWidth, screenHeight, NULL, NULL, m_Hinstance, NULL);
 
 		ShowWindow(m_Hwnd, SW_SHOW);
 		SetForegroundWindow(m_Hwnd);
@@ -206,7 +207,7 @@ namespace bonsai {
 		RECT rect;
 		GetWindowRect(m_Hwnd, &rect);
 		ClipCursor(&rect);
-		
+
 		ShowCursor(false);
 
 	}
@@ -230,8 +231,18 @@ namespace bonsai {
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	{
-		switch(umessage)
+		switch (umessage)
 		{
+		case WM_CREATE:
+		{
+			HMENU hmenu = CreateMenu();
+			HMENU titlemenu = CreateMenu();
+			AppendMenu(hmenu, MF_POPUP, (UINT_PTR)titlemenu, L"Bonsai Engine");
+			SetMenu(hwnd, hmenu);
+			return 0;
+		}
+
+
 		case WM_DESTROY:
 			PostQuitMessage(0);
 

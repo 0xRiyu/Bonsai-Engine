@@ -35,7 +35,7 @@ namespace bonsai {
 
 	bool RawInput::RegisterKeyboardMouse(HWND hWnd)
 	{
-		RAWINPUTDEVICE Rid[2];
+		RAWINPUTDEVICE Rid[1];
 
 		Rid[0].usUsagePage = 0x01;
 		Rid[0].usUsage = 0x02;
@@ -43,13 +43,8 @@ namespace bonsai {
 		//Rid[0].dwFlags = RIDEV_NOLEGACY;   // adds HID mouse and also ignores legacy mouse messages
 		Rid[0].hwndTarget = hWnd;
 
-		Rid[1].usUsagePage = 0x01;
-		Rid[1].usUsage = 0x06;
-		Rid[1].dwFlags = 0;
-		//Rid[1].dwFlags = RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
-		Rid[1].hwndTarget = hWnd;
 
-		if (RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])) == FALSE) {
+		if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == FALSE) {
 			DWORD error = GetLastError();
 			return false;
 		}
@@ -103,49 +98,49 @@ namespace bonsai {
 		//	}
 		//}
 
-		//////while (true){
-		////	UINT cbSize;
-		////	//Sleep(1000);
+		////while (true){
+		//	UINT cbSize;
+		//	//Sleep(1000);
 
-		////	GetRawInputBuffer(NULL, &cbSize, sizeof(RAWINPUTHEADER));
-		////	cbSize *= 16;            // this is a wild guess
-		////	PRAWINPUT pRawInput = (PRAWINPUT)malloc(cbSize);
-		////	if (pRawInput == NULL)
-		////	{
-		////		return;
-		////	}
-		////	for (;;)
-		////	{
-		////		UINT cbSizeT = cbSize;
-		////		UINT nInput = GetRawInputBuffer(pRawInput, &cbSizeT, sizeof(RAWINPUTHEADER));
-		////		if (nInput == 0)
-		////		{
-		////			break;
-		////		}
-		////		assert(nInput > 0);
-		////		PRAWINPUT* paRawInput = (PRAWINPUT*)malloc(sizeof(PRAWINPUT) * nInput);
-		////		if (paRawInput == NULL)
-		////		{
-		////			break;
-		////		}
-		////		PRAWINPUT pri = pRawInput;
-		////		for (UINT i = 0; i < nInput; ++i)
-		////		{
-		////			paRawInput[i] = pri;
-		////			pri = NEXTRAWINPUTBLOCK(pri);
-		////			if (pri->header.dwType == RIM_TYPEHID)
-		////			{
-		////				int asd=32;
-		////				asd = asd;
-		////			}
-		////		}
-		////		// to clean the buffer
-		////		DefRawInputProc(paRawInput, nInput, sizeof(RAWINPUTHEADER));
+		//	GetRawInputBuffer(NULL, &cbSize, sizeof(RAWINPUTHEADER));
+		//	cbSize *= 16;            // this is a wild guess
+		//	PRAWINPUT pRawInput = (PRAWINPUT)malloc(cbSize);
+		//	if (pRawInput == NULL)
+		//	{
+		//		return;
+		//	}
+		//	for (;;)
+		//	{
+		//		UINT cbSizeT = cbSize;
+		//		UINT nInput = GetRawInputBuffer(pRawInput, &cbSizeT, sizeof(RAWINPUTHEADER));
+		//		if (nInput == 0)
+		//		{
+		//			break;
+		//		}
+		//		assert(nInput > 0);
+		//		PRAWINPUT* paRawInput = (PRAWINPUT*)malloc(sizeof(PRAWINPUT) * nInput);
+		//		if (paRawInput == NULL)
+		//		{
+		//			break;
+		//		}
+		//		PRAWINPUT pri = pRawInput;
+		//		for (UINT i = 0; i < nInput; ++i)
+		//		{
+		//			paRawInput[i] = pri;
+		//			pri = NEXTRAWINPUTBLOCK(pri);
+		//			if (pri->header.dwType == RIM_TYPEHID)
+		//			{
+		//				int asd=32;
+		//				asd = asd;
+		//			}
+		//		}
+		//		// to clean the buffer
+		//		DefRawInputProc(paRawInput, nInput, sizeof(RAWINPUTHEADER));
 
-		////		free(paRawInput);
-		////	}
-		////	free(pRawInput);
-		//////}
+		//		free(paRawInput);
+		//	}
+		//	free(pRawInput);
+		////}
 	}
 
 #endif //WINSTORE_SUPPORT
