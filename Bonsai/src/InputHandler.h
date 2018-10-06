@@ -23,7 +23,7 @@ namespace bonsai {
 		bool IsKeyDown(unsigned int);
 
 		void ParseMouseInput(bonsai::graphics::Camera* camera, LPARAM lparam);
-		void ParseKeyboardInput(bonsai::graphics::Camera* camera);
+		void ParseKeyboardInput(bonsai::graphics::Camera* camera, float deltaTime);
 
 	private:
 		bool m_Keys[256];

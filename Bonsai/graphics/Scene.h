@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Light.h"
 #include "Text.h"
+#include "Frustum.h"
 #include <SimpleMath.h>
 
 namespace bonsai {
@@ -35,8 +36,11 @@ namespace bonsai {
 			Direct3D * m_Direct3D;
 			Camera* m_Camera;
 			Model* m_Model;
+			
 			Shader* m_TextureShader;
 			Light* m_Light;
+			Frustum* m_Frustum;
+			AABB* m_aabb;
 		public:
 			Text* m_Text;
 		};

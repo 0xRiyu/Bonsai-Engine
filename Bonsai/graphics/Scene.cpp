@@ -2,7 +2,7 @@
 namespace bonsai {
 	namespace graphics {
 		Scene::Scene()
-			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_TextureShader(nullptr), m_Light(nullptr), m_Text(nullptr)
+			:m_Direct3D(nullptr), m_Camera(nullptr), m_Model(nullptr),m_aabb(nullptr), m_TextureShader(nullptr), m_Light(nullptr), m_Text(nullptr), m_Frustum(nullptr)
 		{
 		}
 
@@ -83,6 +83,11 @@ namespace bonsai {
 
 			m_Text->PushBackText("FPS String","FPS Counter", 10, 10, 1.0f, 1.0f, 1.0f);
 
+			m_Frustum = new Frustum();
+			if (!m_Frustum) return false;
+
+			m_aabb = new AABB();
+
 			return true;
 		}
 
@@ -127,6 +132,11 @@ namespace bonsai {
 				delete m_Text;
 				m_Text = nullptr;
 			}
+			if(m_Frustum)
+			{
+				delete m_Frustum;
+				m_Frustum = nullptr;
+			}
 		}
 
 		bool Scene::Frame()
@@ -156,6 +166,7 @@ namespace bonsai {
 
 			XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, worldMatrix2D, viewMatrix2D;
 			bool result;
+			int renderModel;
 
 			ID3D11DeviceContext* deviceContext = m_Direct3D->GetDeviceContext();
 
@@ -171,8 +182,10 @@ namespace bonsai {
 			m_Direct3D->GetProjectionMatrix(projectionMatrix);
 			m_Direct3D->GetOrthoMatrix(orthoMatrix);
 
+			m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
-			worldMatrix = worldMatrix * XMMatrixRotationY(rotation  * 0.0174533);
+			XMMATRIX rotMatrix = XMMatrixRotationY(rotation  * 0.0174533);
+			worldMatrix = worldMatrix * rotMatrix;
 
 			//Translate the orth projection in front of the camera slightly
 			XMVECTOR camloc = m_Camera->GetPositionVector();
@@ -190,22 +203,28 @@ namespace bonsai {
 				m_Model->GetTexture(),m_Light->GetAmbientColor() ,m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
 
-			XMMATRIX worldMatrixInc = XMMatrixIdentity();
-
-			for (int i = -25; i < 25; i+=5)
-			{
+			XMMATRIX worldMatrixInc;
+			for (int i = -25; i < 25; i+=5)	{
 				for (int j = -25; j < 25; j += 5) {
 					for (int k = -25; k < 25; k += 5) {
-						worldMatrixInc = XMMatrixRotationY(rotation  * 0.0174533) * XMMatrixTranslation(i, j, k) ;
 						
 						
-						result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrixInc, viewMatrix, projectionMatrix,
-							m_Model->GetTexture(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection());
-						if (!result) return false;
+						worldMatrixInc = rotMatrix * XMMatrixTranslation(i, j, k) ;
+						
+						//m_aabb->get(worldMatrixInc);
+						//renderModel = m_Frustum->CheckBox(*m_aabb);
+
+						renderModel = m_Frustum->CheckPoint(XMFLOAT3(i, j, k));
+						if (renderModel) {
+							result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrixInc, viewMatrix, projectionMatrix,
+								m_Model->GetTexture(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection());
+							if (!result) return false;
+						}
+						
 					}
 				}
 			}
-
+			
 			m_Direct3D->TurnZBufferOff();
 
 			m_Direct3D->TurnOnAlphaBlending();

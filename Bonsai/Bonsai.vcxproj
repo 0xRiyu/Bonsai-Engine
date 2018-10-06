@@ -147,6 +147,7 @@
     <ClCompile Include="graphics\D3D.cpp" />
     <ClCompile Include="graphics\Font.cpp" />
     <ClCompile Include="graphics\FontShader.cpp" />
+    <ClCompile Include="graphics\Frustum.cpp" />
     <ClCompile Include="graphics\Img2D.cpp" />
     <ClCompile Include="graphics\Light.cpp" />
     <ClCompile Include="graphics\Model.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="graphics\D3D.h" />
     <ClInclude Include="graphics\Font.h" />
     <ClInclude Include="graphics\FontShader.h" />
+    <ClInclude Include="graphics\Frustum.h" />
     <ClInclude Include="graphics\Img2D.h" />
     <ClInclude Include="graphics\Light.h" />
     <ClInclude Include="graphics\Model.h" />

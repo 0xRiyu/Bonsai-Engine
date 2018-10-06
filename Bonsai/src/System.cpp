@@ -106,17 +106,27 @@ namespace bonsai {
 		m_NumberOfFrames++;
 
 		//To include the case where current time seconds resets to 0
-		if (m_CurrentTime.wSecond - m_LastTime.wSecond >= 1.0f || m_CurrentTime.wSecond - m_LastTime.wSecond < -1)
+		float deltaTime = m_CurrentTime.wMilliseconds - m_LastTime.wMilliseconds;
+		
+		
+		if (m_CurrentTime.wSecond - m_LastTime.wSecond >= 1.0f  || m_CurrentTime.wSecond - m_LastTime.wSecond < -1.0f)
 		{
 			char FPScount[48];
 			sprintf_s(FPScount, "FPS: %d", (int)m_NumberOfFrames);
 
 			m_Scene->m_Text->UpdateText("FPS String", FPScount, 10, 10, 1.0, 1.0, 1.0);
 			m_NumberOfFrames = 0.0f;
-			GetSystemTime(&m_LastTime);;
+			
+		}
+		
+		GetSystemTime(&m_LastTime);
+		//Hack for when resets, find new implimentation in future
+		if (deltaTime < 0)
+		{
+			deltaTime = m_CurrentTime.wMilliseconds - m_LastTime.wMilliseconds;
 		}
 
-		m_Input->ParseKeyboardInput(m_Scene->GetCamera());
+		m_Input->ParseKeyboardInput(m_Scene->GetCamera(), deltaTime);
 
 		return m_Scene->Frame();
 	}

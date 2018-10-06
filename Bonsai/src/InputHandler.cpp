@@ -54,7 +54,7 @@ namespace bonsai {
 		camera->Update();
 	}
 
-	void InputHandler::ParseKeyboardInput(bonsai::graphics::Camera* camera)
+	void InputHandler::ParseKeyboardInput(bonsai::graphics::Camera* camera, float deltaTime)
 	{
 		XMVECTOR posVec = camera->GetPositionVector();
 		XMVECTOR upVec = camera->GetUpVector();
@@ -63,32 +63,32 @@ namespace bonsai {
 
 		if (IsKeyDown(0x41)) //A
 		{
-			posVec += (XMVector3Normalize(XMVector3Cross(lookatVec, upVec)) * 0.01);
+			posVec += (XMVector3Normalize(XMVector3Cross(lookatVec, upVec)) * deltaTime * 0.01);
 		}
 
 		if (IsKeyDown(0x44)) //D
 		{
-			posVec -= (XMVector3Normalize(XMVector3Cross(lookatVec, upVec)) * 0.01);
+			posVec -= (XMVector3Normalize(XMVector3Cross(lookatVec, upVec))* deltaTime * 0.01);
 		}
 
 		if (IsKeyDown(0x57)) //W
 		{
-			posVec += 0.01 * XMVector3Normalize(lookatVec);
+			posVec += XMVector3Normalize(lookatVec) * deltaTime * 0.01;
 		}
 
 		if (IsKeyDown(0x53)) //S
 		{
-			posVec -= 0.01 * XMVector3Normalize(lookatVec);
+			posVec -= XMVector3Normalize(lookatVec) * deltaTime * 0.01;
 		}
 
 		if (IsKeyDown(0x51)) //Q
 		{
-			posVec = XMVectorSet(XMVectorGetX(posVec), XMVectorGetY(posVec) - (0.01), XMVectorGetZ(posVec), XMVectorGetW(posVec));
+			posVec = XMVectorSet(XMVectorGetX(posVec), XMVectorGetY(posVec) - (0.01) * deltaTime, XMVectorGetZ(posVec), XMVectorGetW(posVec));
 		}
 
 		if (IsKeyDown(0x45)) //E
 		{
-			posVec = XMVectorSet(XMVectorGetX(posVec), XMVectorGetY(posVec) + (0.01), XMVectorGetZ(posVec), XMVectorGetW(posVec));
+			posVec = XMVectorSet(XMVectorGetX(posVec), XMVectorGetY(posVec) + (0.01) * deltaTime, XMVectorGetZ(posVec), XMVectorGetW(posVec));
 		}
 
 		XMFLOAT3 posVecUpdate;
