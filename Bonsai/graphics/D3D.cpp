@@ -48,7 +48,6 @@ namespace bonsai
 			D3D11_VIEWPORT viewport;
 			D3D11_BLEND_DESC blendStateDesc;
 
-			float fieldOfView, screenAspect;
 
 			m_vsync_enabled = vsync;
 
@@ -326,21 +325,9 @@ namespace bonsai
 			result = m_Device->CreateBlendState(&blendStateDesc, &m_AlphaDisableBlendingState);
 			if (FAILED(result)) return false;
 
-			//Setup Projection Matrix
-			fieldOfView = 3.14159f / 4.0f;
-			screenAspect = (float)screenWidth / (float)screenHeight;
-
-
-			//Create the matrix
-			m_ProjectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
 
 			//World Matrix
 			m_WorldMatrix = XMMatrixIdentity();
-
-			m_OrthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
-
-
-
 
 			return true;
 		}

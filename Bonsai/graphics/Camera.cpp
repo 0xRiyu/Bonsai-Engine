@@ -1,11 +1,18 @@
 ﻿#include "Camera.h"
+
 namespace bonsai
 {
 	namespace graphics
 	{
-		Camera::Camera()
+		Camera::Camera(float screenWidth, float screenHeight)
 			:m_PositionX(0.0f), m_PositionY(0.0f), m_PositionZ(-5.0f), m_RotationYaw(0.0f), m_RotationPitch(0.0f), m_RotationRoll(0.0f)
 		{
+			m_FOV = 3.14159f / 4.0f;
+			m_Aspect = (float)screenWidth / (float)screenHeight;
+			m_ProjectionMatrix = XMMatrixPerspectiveFovLH(m_FOV, m_Aspect, SCREEN_NEAR, SCREEN_DEPTH);
+			m_OrthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+			m_Frustum = new Frustum();
+			if (!m_Frustum) assert(false);
 			Update();
 		}
 
@@ -18,10 +25,16 @@ namespace bonsai
 
 		Camera::~Camera()
 		{
+			if (m_Frustum)
+			{
+				delete m_Frustum;
+				m_Frustum = nullptr;
+			}
 		}
 
 		void Camera::Update()
 		{
+
 			XMFLOAT3 up, position, lookat;
 			XMVECTOR upVector, positionVector, lookAtVector;
 			float yaw, pitch, roll;
@@ -78,6 +91,7 @@ namespace bonsai
 			m_ViewMatrix = XMMatrixLookAtLH(positionVector, positionVector + lookAtVector, upVector);
 
 
+			m_Frustum->ConstructFrustum(SCREEN_DEPTH, m_ProjectionMatrix, m_ViewMatrix);
 		}
 	}
 }

@@ -13,8 +13,7 @@ namespace bonsai {
 		const bool FULL_SCREEN(false);
 		//TODO: FIX VSYNC with Raw input
 		const bool VSYNC_ENABLED(false);
-		const float SCREEN_DEPTH(1000.0f);
-		const float SCREEN_NEAR(0.1f);
+
 
 		class Scene
 		{
@@ -39,8 +38,7 @@ namespace bonsai {
 			
 			Shader* m_TextureShader;
 			Light* m_Light;
-			Frustum* m_Frustum;
-			AABB* m_aabb;
+
 		public:
 			Text* m_Text;
 		};

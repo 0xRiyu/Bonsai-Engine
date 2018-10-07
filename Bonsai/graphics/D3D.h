@@ -24,13 +24,9 @@ namespace bonsai {
 			inline ID3D11Device* GetDevice() { return m_Device; }
 			inline ID3D11DeviceContext* GetDeviceContext() { return m_DeviceContext; }
 
-			inline void GetProjectionMatrix(XMMATRIX& proj) { proj=  m_ProjectionMatrix; }
 			inline void GetWorldMatrix(XMMATRIX& world) { world = m_WorldMatrix; }
-			inline void GetOrthoMatrix(XMMATRIX& orth) { orth = m_OrthoMatrix; }
-
-			inline XMMATRIX GetProjectionMatrix() const { return m_ProjectionMatrix; }
 			inline XMMATRIX GetWorldMatrix() const { return m_WorldMatrix; }
-			inline XMMATRIX GetOrthoMatrix() const { return m_OrthoMatrix; }
+
 
 			inline void TurnZBufferOn() const { m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState, 1); }
 			inline void TurnZBufferOff() const { m_DeviceContext->OMSetDepthStencilState(m_DepthDisabledStencilState, 1); }
@@ -63,9 +59,7 @@ namespace bonsai {
 			ID3D11BlendState* m_AlphaEnableBlendingState;
 			ID3D11BlendState* m_AlphaDisableBlendingState;
 
-			XMMATRIX m_ProjectionMatrix;
 			XMMATRIX m_WorldMatrix;
-			XMMATRIX m_OrthoMatrix;
 
 		};
 	}
