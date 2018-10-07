@@ -39,8 +39,8 @@ namespace bonsai {
 
 			m_Camera = new Camera(screenWidth, screenHeight);
 			if (!m_Camera) return false;
-			m_Camera->SetPosition(0.0f, 0.0f, -15.0f);
-			m_Camera->SetRotation(25.0, 0.0f, 0.0f);
+			m_Camera->SetPosition(0.0f, 0.0f, -0.0f);
+			m_Camera->SetRotation(0.0, 0.0f, 0.0f);
 			m_Camera->Update();
 			m_Camera->GetViewMatrix(baseViewMatrix);
 
@@ -48,7 +48,7 @@ namespace bonsai {
 			m_Model = new Model();
 			if (!m_Model) return false;
 		
-			result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "resources/textures/bonsai_small.tga", "resources/obj/cube.txt");
+			result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "resources/textures/bonsai_small.tga", "resources/obj/flower/flower.txt");
 			if (!result)
 			{
 				MessageBox(hwnd, L"Could not initalize the model object.", L"Error", MB_OK);
@@ -82,7 +82,7 @@ namespace bonsai {
 			}
 
 			m_Text->PushBackText("FPS String","FPS Counter", 10, 10, 1.0f, 1.0f, 1.0f);
-
+			m_Text->PushBackText("RenderCount", "Render Count: ", 10, 30, 1, 1, 1);
 
 			return true;
 		}
@@ -176,8 +176,10 @@ namespace bonsai {
 
 
 			float rads = 0.0174533;
-			XMMATRIX rotMatrix = XMMatrixRotationY(rotation  * rads);
+			XMMATRIX rotMatrix = XMMatrixRotationZ(rotation  * rads) * XMMatrixRotationX(90 * rads);
 			worldMatrix = worldMatrix * rotMatrix;
+
+			XMMATRIX scaleMatrix = XMMatrixScaling(0.2, 0.2, 0.2);
 
 			//Translate the orth projection in front of the camera slightly
 			XMVECTOR camloc = m_Camera->GetPositionVector();
@@ -194,28 +196,27 @@ namespace bonsai {
 			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 				m_Model->GetTexture(),m_Light->GetAmbientColor() ,m_Light->GetDiffuseColor(), m_Light->GetDirection());
 			if (!result) return false;
-
+			int rendercount = 0;
 			XMMATRIX worldMatrixInc;
 			for (int i = -25; i < 25; i+=5)	{
 				for (int j = -25; j < 25; j += 5) {
 					for (int k = -25; k < 25; k += 5) {
-						
-						
-						worldMatrixInc = rotMatrix * XMMatrixTranslation(i, j, k) ;
-						
-						//AABB a = m_aabb->get(worldMatrixInc);
-						//renderModel = m_Frustum->CheckBox(m_aabb->get(worldMatrixInc));
 
-						renderModel = m_Camera->m_Frustum->CheckPoint(XMFLOAT3(i, j, k));
-						if (renderModel) {
+						if (m_Camera->m_Frustum->CheckCube(i, j, k, 1)) {
+							worldMatrixInc = rotMatrix * scaleMatrix *  XMMatrixTranslation(i, j, k);
+
 							result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrixInc, viewMatrix, projectionMatrix,
 								m_Model->GetTexture(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection());
 							if (!result) return false;
+							rendercount++;
 						}
-						
+
 					}
 				}
 			}
+			char counterstr[256];
+			sprintf(counterstr, "Render Count: %d", rendercount);
+			m_Text->UpdateText("RenderCount", counterstr, 10, 30, 1, 1, 1);
 			
 			m_Direct3D->TurnZBufferOff();
 

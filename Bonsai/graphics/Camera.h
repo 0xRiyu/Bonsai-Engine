@@ -52,7 +52,7 @@ namespace bonsai {
 			XMVECTOR m_Position, m_LookAt, m_Up, m_RotationVector;
 
 		public:
-			Frustum * m_Frustum;
+			Frustum* m_Frustum;
 		};
 	}
 }

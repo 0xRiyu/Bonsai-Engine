@@ -104,6 +104,60 @@ namespace bonsai
 			return true;
 		}
 
+		bool Frustum::CheckCube(float xCenter, float yCenter, float zCenter, float radius)
+		{
+
+
+			// Check if any one point of the cube is in the view frustum.
+			for (int i = 0; i<6; i++)
+			{
+				
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter - radius), (yCenter - radius), (zCenter - radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter + radius), (yCenter - radius), (zCenter - radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter - radius), (yCenter + radius), (zCenter - radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter + radius), (yCenter + radius), (zCenter - radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter - radius), (yCenter - radius), (zCenter + radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter + radius), (yCenter - radius), (zCenter + radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter - radius), (yCenter + radius), (zCenter + radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_Planes[i]), XMLoadFloat3(&XMFLOAT3((xCenter + radius), (yCenter + radius), (zCenter + radius))))) >= 0.0f)
+				{
+					continue;
+				}
+
+				return false;
+			}
+
+			return true;
+		}
+
 		int Frustum::CheckBox(const AABB& box) const
 		{
 			int iTotalIn = 0;
@@ -125,8 +179,9 @@ namespace bonsai
 					return(false);
 				iTotalIn += iPtIn;
 			}
-			if (iTotalIn == 6)
+			if (iTotalIn == 6) {
 				return(BOX_FRUSTUM_INSIDE);
+			}
 			return(BOX_FRUSTUM_INTERSECTS);
 		}
 

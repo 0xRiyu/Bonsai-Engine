@@ -25,6 +25,7 @@ namespace bonsai
 
 			bool CheckPoint(const XMFLOAT3& point) const;
 			bool CheckSphere(const XMFLOAT3& center, float radius) const;
+			bool CheckCube(float xCenter, float yCenter, float zCenter, float radius);
 
 #define BOX_FRUSTUM_INTERSECTS 1
 #define BOX_FRUSTUM_INSIDE 2
@@ -53,6 +54,7 @@ namespace bonsai
 			XMFLOAT3 _min;
 			XMFLOAT3 _max;
 			AABB(const XMFLOAT3& _min = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX), const XMFLOAT3& _max = XMFLOAT3(-FLT_MAX, -FLT_MAX, -FLT_MAX)) : _min(_min), _max(_max) {}
+			
 			AABB get(const XMMATRIX& mat) const
 			{
 				XMFLOAT3 corners[8];
@@ -63,6 +65,7 @@ namespace bonsai
 				}
 				XMFLOAT3 min = corners[0];
 				XMFLOAT3 max = corners[6];
+
 				for (int i = 0; i < 8; ++i)
 				{
 					const XMFLOAT3& p = corners[i];
