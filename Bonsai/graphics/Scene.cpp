@@ -48,12 +48,16 @@ namespace bonsai {
 			m_Model = new Model();
 			if (!m_Model) return false;
 		
-			result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "resources/textures/bonsai_small.tga", "resources/obj/flower/flower.txt");
+			result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "resources/obj/flower/flower.tga", "resources/obj/flower/flower.txt");
 			if (!result)
 			{
 				MessageBox(hwnd, L"Could not initalize the model object.", L"Error", MB_OK);
 				return false;
 			}
+			
+
+			//TODO: Finish later
+			//m_Model->LoadOBJModel("resources/obj/flower/flower.obj");
 
 			m_TextureShader = new Shader();
 			if (!m_TextureShader) return false;
@@ -140,25 +144,14 @@ namespace bonsai {
 		bool Scene::Render()
 		{
 			static float rotation = 0.0f;
-			static bool flip(false);
 
-			if (flip) {
-				rotation += (float)XM_PI * 0.005f;
+			if (rotation > 360) {
+				rotation = 0;
+				
 			}
-			else
-			{
-				rotation -= (float)XM_PI * 0.005f;
-			}
-
-			if (rotation > 360) flip = false;
-			if (rotation < -360) flip = true;
-
-
-
-
-			XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, worldMatrix2D, viewMatrix2D;
+			//rotation += (float)XM_PI * 0.005f;
+			XMMATRIX viewMatrix, projectionMatrix, orthoMatrix, worldMatrix2D, viewMatrix2D;
 			bool result;
-			int renderModel;
 
 			ID3D11DeviceContext* deviceContext = m_Direct3D->GetDeviceContext();
 
@@ -167,8 +160,7 @@ namespace bonsai {
 			m_Camera->Update();
 
 			//callbacks
-			m_Direct3D->GetWorldMatrix(worldMatrix);
-			worldMatrix2D = worldMatrix;
+			m_Direct3D->GetWorldMatrix(worldMatrix2D);
 			m_Camera->GetViewMatrix(viewMatrix);
 			m_Camera->GetViewMatrix(viewMatrix2D);
 			m_Camera->GetProjectionMatrix(projectionMatrix);
@@ -177,9 +169,9 @@ namespace bonsai {
 
 			float rads = 0.0174533;
 			XMMATRIX rotMatrix = XMMatrixRotationZ(rotation  * rads) * XMMatrixRotationX(90 * rads);
-			worldMatrix = worldMatrix * rotMatrix;
 
-			XMMATRIX scaleMatrix = XMMatrixScaling(0.2, 0.2, 0.2);
+
+			XMMATRIX scaleMatrix = XMMatrixScaling(0.35, 0.35, 0.35);
 
 			//Translate the orth projection in front of the camera slightly
 			XMVECTOR camloc = m_Camera->GetPositionVector();
@@ -193,17 +185,13 @@ namespace bonsai {
 			
 			m_Model->Render(deviceContext);
 
-			result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-				m_Model->GetTexture(),m_Light->GetAmbientColor() ,m_Light->GetDiffuseColor(), m_Light->GetDirection());
-			if (!result) return false;
 			int rendercount = 0;
-			XMMATRIX worldMatrixInc;
-			for (int i = -25; i < 25; i+=5)	{
-				for (int j = -25; j < 25; j += 5) {
-					for (int k = -25; k < 25; k += 5) {
+			for (int i = -15; i < 15; i+=5)	{
+				for (int j = -15; j < 15; j += 5) {
+					for (int k = -15; k < 15; k += 5) {
 
 						if (m_Camera->m_Frustum->CheckCube(i, j, k, 1)) {
-							worldMatrixInc = rotMatrix * scaleMatrix *  XMMatrixTranslation(i, j, k);
+							XMMATRIX worldMatrixInc = rotMatrix * scaleMatrix *  XMMatrixTranslation(i, j, k);
 
 							result = m_TextureShader->Render(deviceContext, m_Model->GetIndexCount(), worldMatrixInc, viewMatrix, projectionMatrix,
 								m_Model->GetTexture(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection());
@@ -221,7 +209,7 @@ namespace bonsai {
 			m_Direct3D->TurnZBufferOff();
 
 			m_Direct3D->TurnOnAlphaBlending();
-			result = m_Text->Render(deviceContext, worldMatrix2D,viewMatrix2D, orthoMatrix);
+			result = m_Text->Render(deviceContext, worldMatrix2D, viewMatrix2D, orthoMatrix);
 			if (!result) return false;
 			m_Direct3D->TurnOffAlphaBlending();
 

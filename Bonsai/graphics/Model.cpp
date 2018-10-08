@@ -118,12 +118,13 @@
 
 			 //Set the vertex buffer to active in the input assembler so it can be rendered
 			 deviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
-
+			 
 			 //Set the index buffer to active
 			 deviceContext->IASetIndexBuffer(m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 			 //set the type of primitive that should be rendered from the buffer - in this case triangles
-			 deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			 deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			 
 
 		 }
 
@@ -165,10 +166,101 @@
 				 fin >> m_Model[i].tu >> m_Model[i].tv;
 				 fin >> m_Model[i].nx >> m_Model[i].ny >> m_Model[i].nz;
 			 }
+			 char temp[60];
+			 sprintf(temp, "%d \n", m_VertexCount);
+			 OutputDebugStringA(temp);
 
 			 fin.close();
 
 			 return true;
+		 }
+
+		 bool Model::LoadOBJModel(const String& modelFileName)
+		 {
+			 std::vector<String> lines = SplitString(ReadFile(modelFileName), '\n');
+			 VertexSet inputVertices;
+			 std::vector<IndexSet> indices;
+
+
+			 for (String line: lines)
+			 {
+				 const char* cstr = line.c_str();
+				 if (strstr(cstr, "#")) //comment;
+				 {
+					 continue;
+				 }
+				 else if (strstr(cstr, "v"))
+				 {
+					 if (strstr(cstr,"vt"))
+					 {
+						 XMFLOAT2 uv;
+						 int result = sscanf(cstr, "%*s %f %f", &uv.x, &uv.y);
+						 if (result == 0)
+						 {
+							 continue;
+						 }
+						 inputVertices.uvs.push_back(uv);
+					 }
+					 else if (strstr(cstr,"vn"))
+					 {
+						 XMFLOAT3 normal;
+						 int result = sscanf(cstr, "%*s %f %f %f", &normal.x, &normal.y, &normal.z);
+						 if (result == 0)
+							 continue;
+						 inputVertices.normals.push_back(normal);
+					 }
+					 else
+					 {
+						 XMFLOAT3 position;
+						 int result = sscanf(cstr, "%*s %f %f %f", &position.x, &position.y, &position.z);
+						 if (result == 0)
+							 continue;
+						 inputVertices.positions.push_back(position);
+					 }
+				 }
+				 else if (strstr(cstr, "f"))
+				 {
+					IndexSet indexSet[3];
+					int result = sscanf(cstr, "%*s %d/%d/%d %d/%d/%d %d/%d/%d", &indexSet[0].position, &indexSet[0].uv, &indexSet[0].normal, &indexSet[1].position, &indexSet[1].uv, &indexSet[1].normal, &indexSet[2].position, &indexSet[2].uv, &indexSet[2].normal);
+					if (result == 0)
+					{
+						continue;
+					}
+					indices.push_back(indexSet[0]);
+					indices.push_back(indexSet[1]);
+				 	indices.push_back(indexSet[2]);
+
+				 }
+				 
+				 
+			 }
+			 float tempsize = inputVertices.positions.size();
+			 char temp[60];
+			 sprintf(temp, "%f", tempsize);
+			 OutputDebugStringA(temp);
+			 m_VertexCount = inputVertices.positions.size();
+			 m_IndexCount = m_VertexCount;
+
+			 m_Model = new ModelType[m_VertexCount];
+			 if (!m_Model) return false;
+			 
+			 for (int i = 0; i < inputVertices.positions.size(); i++)
+			 {
+				 m_Model[i].x = inputVertices.positions[i].x;
+				 m_Model[i].y = inputVertices.positions[i].y;
+				 m_Model[i].z = inputVertices.positions[i].z;
+				 //Not same number of elements fix later
+				 m_Model[i].tu = inputVertices.uvs[i].x;
+				 m_Model[i].tv = inputVertices.uvs[i].y;
+				 m_Model[i].nx = inputVertices.normals[i].x;
+				 m_Model[i].ny = inputVertices.normals[i].y;
+				 m_Model[i].nz = inputVertices.normals[i].z;
+
+
+			 }
+			 
+
+			 return false;
 		 }
 
 		 void Model::ReleaseModel()

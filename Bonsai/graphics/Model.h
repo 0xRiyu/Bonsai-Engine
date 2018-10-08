@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../bonsai.h"
 #include "Texture.h"
+#include "../util/FileUtils.h"
 using namespace DirectX;
 using namespace std;
 namespace bonsai {
@@ -22,6 +23,21 @@ namespace bonsai {
 				float nx, ny, nz;
 			};
 
+		private:
+			struct VertexSet
+			{
+				std::vector<XMFLOAT3> positions, normals;
+				std::vector<XMFLOAT2> uvs;
+			};
+			// TODO: Replace with uvec3, whenever that begins to exist
+		public:
+			struct IndexSet
+			{
+				UINT position;
+				UINT uv;
+				UINT normal;
+			};
+
 		public:
 			Model();
 			Model(const Model& other);
@@ -38,6 +54,9 @@ namespace bonsai {
 		private:
 
 			bool LoadModel(const char* modelFileName);
+		public:
+			bool LoadOBJModel(const String& modelFileName);
+		private:
 			void ReleaseModel();
 
 			bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext,const char* filePath);

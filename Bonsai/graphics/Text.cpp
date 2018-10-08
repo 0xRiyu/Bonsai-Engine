@@ -74,6 +74,7 @@ namespace bonsai
 
 		bool Text::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix,XMMATRIX viewMatrix, XMMATRIX orthoMatrix)
 		{
+			//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			m_BaseViewMatrix = viewMatrix;
 			for (auto i = sentenceMap.begin(); i != sentenceMap.end(); ++i)
 			{
@@ -81,6 +82,7 @@ namespace bonsai
 				if (!result) return false;
 			}
 			return true;
+			
 		}
 
 		void Text::PushBackText(String ID, const char* sentence, int posX, int posY, float red, float green, float blue)
